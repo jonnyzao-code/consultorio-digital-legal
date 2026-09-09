@@ -1,0 +1,17 @@
+node_modules/
+.next/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+.npm-cache/
+.DS_Store
+*.log
+*.db
+supabase-token.txt
+.pnpm-store/
+consultorio-legal/**/node_modules/
+consultorio-legal/**/.venv/
+npm-debug.log*

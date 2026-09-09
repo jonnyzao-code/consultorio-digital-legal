@@ -1,0 +1,2 @@
+INSERT INTO public.user_roles (user_id, role) VALUES ('90024767-87e9-4f1c-a798-09a928bbd3ba','admin') ON CONFLICT (user_id, role) DO NOTHING;
+UPDATE public.profiles SET plan = 'pago' WHERE id = '90024767-87e9-4f1c-a798-09a928bbd3ba';

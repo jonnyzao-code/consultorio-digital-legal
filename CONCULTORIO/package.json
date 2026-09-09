@@ -1,0 +1,30 @@
+{
+  "name": "consultorio-digital-legal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma SaaS de servicios legales digitales para Colombia",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "api:dev": "cd apps/api && uvicorn main:app --reload --port 8000",
+    "web:dev": "cd apps/web && next dev",
+    "admin:dev": "cd apps/admin && next dev --port 3001"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "python": ">=3.11.0"
+  },
+  "packageManager": "npm@10.8.0"
+}

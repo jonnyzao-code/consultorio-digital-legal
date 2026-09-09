@@ -1,0 +1,60 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#1e3a5f',
+          50: '#e8eef6',
+          100: '#c5d4e8',
+          200: '#9eb8d8',
+          300: '#779cc8',
+          400: '#5986bc',
+          500: '#3c70b0',
+          600: '#2e5a96',
+          700: '#1e3a5f',
+          800: '#152d4a',
+          900: '#0c1f35',
+          foreground: '#ffffff',
+        },
+        secondary: {
+          DEFAULT: '#c9a84c',
+          50: '#fdf8ec',
+          100: '#f9edca',
+          200: '#f3dfa0',
+          300: '#edce72',
+          400: '#e8c050',
+          500: '#c9a84c',
+          600: '#a8883a',
+          700: '#85692c',
+          800: '#634e20',
+          900: '#413314',
+          foreground: '#1e3a5f',
+        },
+        accent: {
+          DEFAULT: '#2d6a4f',
+          50: '#e8f4ee',
+          100: '#c4e3d2',
+          200: '#9dd0b4',
+          300: '#73bc94',
+          400: '#50ac7c',
+          500: '#2d9c64',
+          600: '#2d6a4f',
+          700: '#1f503a',
+          800: '#153826',
+          900: '#0a1f14',
+          foreground: '#ffffff',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+}

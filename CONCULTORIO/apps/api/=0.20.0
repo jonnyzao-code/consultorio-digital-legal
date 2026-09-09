@@ -1,0 +1,4 @@
+WARNING: The directory '/Users/jairojonnyhidalgoobando/Library/Caches/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+
+[notice] A new release of pip is available: 26.1.2 -> 26.2.1
+[notice] To update, run: /Users/jairojonnyhidalgoobando/Desktop/DEEP-WEB/CONCULTORIO/apps/api/.venv/bin/python -m pip install --upgrade pip

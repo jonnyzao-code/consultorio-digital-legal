@@ -1,0 +1,14 @@
+{
+  "name": "consultorio-legal",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "install:web": "npm install --workspace=apps/web"
+  }
+}

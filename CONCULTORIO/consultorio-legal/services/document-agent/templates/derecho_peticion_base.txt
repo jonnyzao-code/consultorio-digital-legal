@@ -1,0 +1,81 @@
+================================================================================
+DERECHO DE PETICIÓN
+================================================================================
+(Art. 23 Constitución Política - Ley 1755 de 2015)
+
+[CIUDAD], [FECHA]
+
+Señor(a)
+[CARGO_DESTINATARIO]
+[ENTIDAD_DESTINATARIA]
+Ciudad
+
+Ref.: DERECHO DE PETICIÓN - [OBJETO_BREVE]
+
+Respetado(a) señor(a) [CARGO_DESTINATARIO]:
+
+Yo, [NOMBRE_PETICIONARIO], identificado(a) con Cédula de Ciudadanía No.
+[CEDULA], domiciliado(a) en [DIRECCION], [CIUDAD], en ejercicio del derecho
+fundamental de petición consagrado en el artículo 23 de la Constitución
+Política de Colombia y reglamentado por la Ley 1755 de 2015, respetuosamente
+me dirijo a usted para hacer la siguiente solicitud:
+
+================================================================================
+I. OBJETO DE LA PETICIÓN
+================================================================================
+
+[OBJETO_DETALLADO]
+
+================================================================================
+II. HECHOS
+================================================================================
+
+1. [HECHO_1]
+2. [HECHO_2]
+...
+
+================================================================================
+III. PETICIÓN CONCRETA
+================================================================================
+
+Con fundamento en lo expuesto, respetuosamente solicito a su despacho:
+
+1. [PETICION_CONCRETA_1]
+2. [PETICION_CONCRETA_2]
+
+================================================================================
+IV. FUNDAMENTOS DE DERECHO
+================================================================================
+
+- Artículo 23 de la Constitución Política: Toda persona tiene derecho a
+  presentar peticiones respetuosas a las autoridades por motivos de interés
+  general o particular.
+
+- Ley 1755 de 2015: Regula el derecho fundamental de petición.
+
+- Artículo 14, Ley 1755/2015: La entidad tiene 15 días hábiles para responder
+  peticiones de interés particular (30 días para información).
+
+- [NORMA_ADICIONAL_ESPECIFICA]
+
+================================================================================
+V. NOTIFICACIONES Y TÉRMINO DE RESPUESTA
+================================================================================
+
+Solicito sea notificado(a) en:
+- Dirección: [DIRECCION]
+- Correo electrónico: [EMAIL]
+- Teléfono: [TELEFONO]
+
+Advierto que el término para responder esta petición es de QUINCE (15) DÍAS
+HÁBILES, so pena de incurrir en silencio administrativo positivo o negativo,
+según corresponda, o en las acciones legales pertinentes.
+
+================================================================================
+
+Atentamente,
+
+_________________________
+[NOMBRE_PETICIONARIO]
+C.C. No. [CEDULA]
+[CIUDAD], [FECHA]

@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: consultorio-db
+    environment:
+      POSTGRES_USER: consultorio
+      POSTGRES_PASSWORD: consultorio
+      POSTGRES_DB: consultorio
+    ports:
+      - "5432:5432"
+    volumes:
+      - consultorio_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U consultorio"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  consultorio_pgdata:

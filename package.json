@@ -1,0 +1,14 @@
+{
+  "name": "consultorio-digital-legal",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.3.4",
+  "scripts": {
+    "setup:legal": "cd lovable-juridico && npm install --cache .npm-cache",
+    "setup:consultorio": "cd CONCULTORIO/apps/api && .venv/bin/python -m pip install -r requirements.txt",
+    "dev:consultorio": "cd CONCULTORIO/apps/api && .venv/bin/python -m uvicorn main:app --reload --port 9504",
+    "dev:web": "pnpm --filter @consultorio/web dev",
+    "dev:legal": "cd lovable-juridico && npm run dev",
+    "build": "pnpm -r build"
+  }
+}

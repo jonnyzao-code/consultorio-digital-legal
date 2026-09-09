@@ -1,0 +1,2625 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultorio Digital Legal — Colombia | Asesoría, Minutas & Rama Judicial</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Wompi Widget Oficial -->
+  <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f5ff',
+              100: '#e0ebff',
+              600: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+              950: '#0f172a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+.minuta-acc { border:1px solid #e2e8f0; border-radius:.9rem; background:#fff; overflow:hidden; }
+.minuta-head { width:100%; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.85rem 1rem; background:#fff; border:none; cursor:pointer; text-align:left; }
+.minuta-head:hover { background:#f8fafc; }
+.minuta-title { font-weight:700; font-size:.9rem; color:#0f172a; }
+.minuta-arrow { color:#64748b; transition: transform .15s; }
+.minuta-open .minuta-arrow { transform: rotate(90deg); }
+.minuta-body { border-top:1px solid #e2e8f0; padding:1rem; }
+.minuta-price { font-size:.72rem; font-weight:700; color:#0f172a; background:#fef3c7; border:1px solid #fde68a; border-radius:.5rem; padding:.4rem .6rem; margin-bottom:.75rem; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    .tab-active {
+      background-color: #1e3a8a !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+    
+    .legal-paper {
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+
+<style>
+/* Homogeneización visual: todas las ventanas y tarjetas con la misma identidad */
+#view-analisis .rounded-2xl, #view-rama .rounded-2xl, #view-minutas .rounded-2xl,
+#view-pagos .rounded-2xl, #view-account .rounded-2xl, #view-vigilancia .rounded-2xl,
+.doc-panel, #docModal > div { background:#ffffff; border:1px solid #e2e8f0; color:#0f172a; }
+.main-view .main-view, .main-view h2, .main-view h3, .doc-panel h2, .doc-panel h3 { color:#0f172a; }
+.doc-panel { border-radius: 1rem; }
+.doc-panel > div:first-child { background:#0f172a; }
+button[onclick*="switchDocTab"] { transition: all .15s; }
+.mini-card { background:#fff; border:1px solid #e2e8f0; border-radius:1rem; padding:1rem; }
+.mini-card .kpi { font-size:1.75rem; font-weight:800; color:#0f172a; }
+.mini-card .lbl { font-size:.7rem; text-transform:uppercase; letter-spacing:.04em; color:#64748b; }
+</style>
+
+</head>
+
+<body class="h-full flex flex-col font-sans text-slate-800 bg-slate-100/70 antialiased selection:bg-brand-100 selection:text-brand-900">
+<!-- PUERTA DE ACCESO: todo servicio requiere registro o ingreso -->
+<div id="authGate" class="fixed inset-0 z-[100] bg-slate-950/97 overflow-y-auto hidden">
+  <div class="max-w-md mx-auto py-14 px-6">
+    <div class="text-center mb-6">
+      <div class="text-3xl mb-1">⚖️</div>
+      <div class="font-black text-white tracking-tight">CONSULTORIO DIGITAL LEGAL <span class="bg-amber-400 text-slate-950 text-[10px] px-1.5 rounded font-mono">COLOMBIA</span></div>
+      <p class="text-xs text-slate-400 mt-1">Para acceder a cualquiera de los servicios, crea tu cuenta o ingresa.</p>
+    </div>
+    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
+      <input type="hidden" id="authMode" value="registro">
+      <div class="flex gap-2">
+        <button onclick="authSetMode('registro')" id="authBtn-registro" class="flex-1 text-sm font-bold px-3 py-2 rounded-lg bg-brand-900 text-white">Registro</button>
+        <button onclick="authSetMode('ingreso')" id="authBtn-ingreso" class="flex-1 text-sm font-medium px-3 py-2 rounded-lg bg-slate-100 text-slate-700">Ingreso</button>
+      </div>
+      <div id="authMsg" class="hidden text-sm rounded-lg p-2 bg-amber-50 text-amber-800 border border-amber-200"></div>
+      <div id="authConfirm" class="hidden text-sm rounded-lg p-3 bg-emerald-50 text-emerald-900 border border-emerald-200 space-y-2">
+        <p><strong>✅ Cuenta creada.</strong> Confirma tu correo para ingresar (revisa tu bandeja; en desarrollo aparece el enlace abajo).</p>
+        <a id="authDevLink" href="#" target="_blank" class="hidden block text-xs font-bold text-blue-700 underline">🔗 Enlace de confirmación (modo desarrollo)</a>
+        <button onclick="reenviarConfirmacion()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Reenviar confirmación</button>
+        <span id="authResendMsg" class="text-xs text-emerald-800"></span>
+      </div>
+      <div id="authRecover" class="hidden text-sm rounded-lg p-3 bg-slate-50 text-slate-800 border border-slate-200 space-y-2">
+        <p class="font-bold">🔑 Restablecer contraseña</p>
+        <input id="resetToken" type="hidden">
+        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nueva contraseña (8+, mayúscula, minúscula y número)</label>
+        <input id="resetPassword" type="password" placeholder="Nueva contraseña" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 text-sm">
+        <button onclick="resetPassword()" class="bg-brand-900 hover:bg-brand-950 text-white text-xs font-bold px-3 py-2 rounded-lg">Restablecer contraseña</button>
+        <span id="authRecoverMsg" class="text-xs text-slate-600 block"></span>
+      </div>
+      <div id="authNameWrap">
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre completo</label>
+        <input id="authName" type="text" placeholder="Tu nombre" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Correo electrónico</label>
+        <input id="authEmail" type="email" placeholder="ej: estudiante@unicervantes.edu.co" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+        <p class="text-[10px] text-slate-400 mt-1">💡 Correos con .edu.co reciben 10% de descuento en la consulta.</p>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Contraseña (8+ caracteres)</label>
+        <input id="authPassword" type="password" placeholder="••••••••" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+      </div>
+      <button onclick="olvidoPassword()" class="text-[11px] text-slate-500 underline-offset-2 hover:underline text-left">¿Olvidaste tu contraseña?</button>
+
+      <button onclick="authSubmit()" id="authBtnLabel" class="w-full bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">Crear cuenta y entrar</button>
+      <p class="text-[11px] text-slate-500 text-center">Con tu cuenta se guarda tu historial: procesos, alertas, sugerencias judiciales, recordatorios y asistencia.</p>
+    </div>
+  </div>
+</div>
+
+
+  <!-- ========================================================================= -->
+  <!-- 1. HEADER & BARRA DE NAVEGACIÓN SUPERIOR (MODERNA Y PRÁCTICA)             -->
+  <!-- ========================================================================= -->
+  <header class="bg-brand-950 text-white sticky top-0 z-40 border-b border-slate-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-4">
+        
+        <!-- Logotipo y Nombre -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchMainTab('rama')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-xl shadow-inner border border-white/20">
+            ⚖️
+          </div>
+          <div>
+            <div class="font-black text-sm tracking-tight text-white flex items-center gap-2">
+              CONSULTORIO DIGITAL LEGAL
+              <span class="text-[10px] bg-amber-400 text-slate-950 font-extrabold px-1.5 py-0.2 rounded font-mono">COLOMBIA</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-medium">Asesoría Fáctica, Minutas & Consulta CPNU</p>
+          </div>
+        </div>
+
+        <!-- PESTAÑAS PRINCIPALES DE NAVEGACIÓN (CAMBIO INSTANTÁNEO EN 1 CLIC) -->
+        <nav class="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+          <button id="navBtn-analisis" onclick="switchMainTab('analisis')" class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+            <span>⚖️</span>
+            <span>1. Diagnóstico & 6 Ramas</span>
+          </button>
+          <button id="navBtn-vigilancia" onclick="switchMainTab('vigilancia')" class="tab-btn tab-active px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+            <span>🏛️</span>
+            <span>2. Consulta de Procesos y Actuaciones Judiciales</span>
+          </button>
+          <button id="navBtn-minutas" onclick="switchMainTab('minutas')" class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+            <span>📄</span>
+            <span>3. Generador de Minutas</span>
+          </button>
+          <button id="navBtn-pagos" onclick="switchMainTab('pagos')" class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+            <span>💳</span>
+            <span>4. Pasarela Bancolombia / Wompi</span>
+          </button>
+          <button id="navBtn-account" onclick="switchMainTab('account')" class="tab-btn hidden px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+            <span>👤</span>
+            <span>Mi Panel</span>
+          </button>
+        </nav>
+
+        <!-- Conexión y Estado -->
+        <div class="flex items-center gap-2">
+          <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 text-[11px] font-mono">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>API Conectada</span>
+          </div>
+          <button onclick="switchMainTab('pagos')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold px-3.5 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+            <span>💳</span>
+            <span class="hidden sm:inline">Pagar /</span>
+            <span>Wompi</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Menú móvil de pestañas -->
+    <div class="md:hidden border-t border-slate-800 bg-slate-900 px-2 py-1.5 flex justify-around text-[11px]">
+      <button onclick="switchMainTab('analisis')" class="py-1 px-2 text-slate-200 font-bold flex flex-col items-center">
+        <span>⚖️</span>
+        <span>Diagnóstico</span>
+      </button>
+      <button onclick="switchMainTab('vigilancia')" class="py-1 px-2 text-slate-400 font-medium flex flex-col items-center">
+        <span>🏛️</span>
+        <span>Consulta Procesos</span>
+      </button>
+      <button onclick="switchMainTab('minutas')" class="py-1 px-2 text-slate-400 font-medium flex flex-col items-center">
+        <span>📄</span>
+        <span>Minutas</span>
+      </button>
+      <button onclick="switchMainTab('pagos')" class="py-1 px-2 text-slate-400 font-medium flex flex-col items-center">
+        <span>💳</span>
+        <span>Recaudo</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- CONTENEDOR PRINCIPAL: VISTAS MODULARES LIMPIAS Y PRÁCTICAS                -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- ======================================================================= -->
+    <!-- MÓDULO 1: DIAGNÓSTICO FÁCTICO & INVESTIGACIÓN MULTIRRAMA (6 RAMAS)      -->
+    <!-- ======================================================================= -->
+    <section id="view-vigilancia" class="main-view hidden space-y-6 animate-fadeIn">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-200 bg-slate-50">
+      <div>
+        <h2 class="text-lg font-bold text-slate-900">🏛️ Consulta de Procesos y Actuaciones Judiciales</h2>
+        <p class="text-xs text-slate-500">Servicio integrado: vigilancia de radicados, alertas, historial y pagos con Wompi. Inicia sesión dentro del panel si aún no lo has hecho.</p>
+      </div>
+      <a href="http://localhost:9501/panel" target="_blank" class="text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-3 py-2 rounded-xl transition">
+        Abrir en pestaña nueva ↗
+      </a>
+    </div>
+    <iframe id="vigilanciaFrame" src="http://localhost:9501/panel" title="Consulta de Procesos y Actuaciones Judiciales" class="w-full" style="height: calc(100vh - 240px); min-height: 560px; border: 0; background: #0f172a;"></iframe>
+  </div>
+</section>
+
+<section id="view-account" class="main-view hidden space-y-6 animate-fadeIn">
+  <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-bold text-slate-900">👤 Mi panel de historial</h2>
+        <p class="text-sm text-slate-500">A nombre de <span id="acctName" class="font-semibold text-slate-800">—</span> · <span id="acctEmail" class="text-slate-600"></span></p>
+      </div>
+      <button onclick="localStorage.removeItem('cdl_token'); location.reload();" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-xl">Cerrar sesión</button>
+    </div>
+    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+      <div class="rounded-xl border border-slate-200 p-4">
+        <h3 class="text-sm font-bold text-slate-800 mb-2">⏰ Nuevo recordatorio</h3>
+        <input id="recTitle" placeholder="Ej: audiencia 25 de junio" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mb-2">
+        <input id="recDate" type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mb-2">
+        <button onclick="addRecordatorio()" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-semibold px-4 py-2 rounded-xl">Guardar</button>
+      </div>
+      <div class="rounded-xl border border-slate-200 p-4">
+        <h3 class="text-sm font-bold text-slate-800 mb-2">🤝 Asistencia</h3>
+        <p class="text-xs text-slate-500 mb-2">¿Necesitas acompañamiento? Regístralo y te contactamos.</p>
+        <button onclick="solicitarAsistencia()" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-semibold px-4 py-2 rounded-xl">Solicitar asistencia</button>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div id="dashStats" class="grid gap-3 sm:grid-cols-4 mb-4"></div>
+    <div id="coopPanel" class="hidden mb-4 rounded-xl border border-slate-200 p-4 bg-slate-50">
+      <h3 class="text-sm font-bold text-slate-800 mb-2">🤝 Cooperativa de abogados (admin)</h3>
+      <div class="flex flex-wrap items-end gap-3 mb-3">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-600 mb-1">Rama del caso a asignar</label>
+          <select id="coopBranch" class="border border-slate-300 rounded-lg px-2.5 py-2 text-sm bg-white">
+            <option value="civil">Civil</option><option value="penal">Penal</option><option value="laboral">Laboral</option>
+            <option value="familia">Familia</option><option value="administrativo">Administrativo</option>
+          </select>
+        </div>
+        <button onclick="assignCoop()" class="bg-brand-900 hover:bg-brand-950 text-white text-xs font-bold px-4 py-2.5 rounded-lg">Asignar al mejor abogado</button>
+        <span id="coopResult" class="text-sm text-slate-600"></span>
+      </div>
+      <div id="coopList" class="space-y-2"></div>
+    </div>
+    <h3 class="text-sm font-bold text-slate-800 mb-2">Historial de tu información</h3>
+      <div id="historyList" class="space-y-2 max-h-[420px] overflow-y-auto"></div>
+    </div>
+  </div>
+</section>
+
+<section id="view-analisis" class="main-view hidden space-y-6 animate-fadeIn">
+      
+      <!-- Banner Informativo -->
+      <div class="bg-gradient-to-r from-brand-950 via-slate-900 to-indigo-950 rounded-2xl p-6 text-white shadow-md border border-slate-800">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="text-xs font-mono font-bold text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+              <span>⚡</span> MOTOR DE INVESTIGACIÓN JURÍDICA CRUZADA (COLOMBIA)
+            </span>
+            <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white">
+              Análisis Fáctico Real & Viabilidad en las 6 Ramas del Derecho
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+              Escriba su relato en lenguaje natural. El sistema extraerá los hechos cronológicos, identificará normas sustantivas específicas, formulará el problema jurídico con rigor de Altas Cortes y evaluará la viabilidad procesal en Constitucional, Civil/Comercial, Laboral, Penal, Administrativo y Familia.
+            </p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+            <button onclick="loadSampleCase('vehiculo')" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl border border-white/20 transition flex items-center gap-1.5">
+              <span>🚗</span> Probar: Carro Dañado
+            </button>
+            <button onclick="loadSampleCase('despido')" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl border border-white/20 transition flex items-center gap-1.5">
+              <span>💼</span> Probar: Despido Laboral
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuadrícula Principal: Formulario a la izquierda, Dictamen a la derecha -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Panel Izquierdo: Entrada de Hechos y Casos de Prueba -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <label for="caseDescription" class="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                <span>✍️</span> Narración de los Hechos Reales
+              </label>
+              <span id="charCounter" class="text-[10px] font-mono text-slate-600 font-bold bg-slate-100 px-2 py-0.5 rounded">0 caracteres</span>
+            </div>
+
+            <textarea 
+              id="caseDescription" 
+              rows="9" 
+              oninput="updateCharCounter()"
+              placeholder="Describa de forma detallada lo ocurrido: fechas exactas, nombres de personas o empresas, montos de dinero pactados o adeudados, y la negativa de la contraparte...&#10;&#10;Ejemplo: 'El 20 de enero compré un vehículo Mazda 3 por 42 millones a Fernando Restrepo. A los 3 días el motor se fundió por una fuga oculta preexistente y se niega a responder...'"
+              class="w-full text-xs text-slate-900 bg-slate-50 focus:bg-white border-2 border-slate-200 focus:border-brand-600 rounded-xl p-3.5 outline-none transition leading-relaxed resize-y font-medium"></textarea>
+
+            <!-- Casos de Muestra Rápidos en 1 Clic -->
+            <div class="space-y-1.5">
+              <span class="text-[11px] font-bold text-slate-700 block flex items-center gap-1">
+                <span>💡</span> Cargar casos de prueba colombianos en 1 clic:
+              </span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                <button onclick="loadSampleCase('vehiculo')" class="p-2 text-left bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 border border-slate-200 rounded-lg text-[11px] font-medium transition text-slate-700">
+                  🚗 <strong>Contrato:</strong> Carro Dañado
+                </button>
+                <button onclick="loadSampleCase('despido')" class="p-2 text-left bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 border border-slate-200 rounded-lg text-[11px] font-medium transition text-slate-700">
+                  💼 <strong>Laboral:</strong> Despido Ilegal
+                </button>
+                <button onclick="loadSampleCase('deuda')" class="p-2 text-left bg-slate-50 hover:bg-amber-50 hover:border-amber-200 border border-slate-200 rounded-lg text-[11px] font-medium transition text-slate-700">
+                  💰 <strong>Deuda:</strong> Letra $15M
+                </button>
+                <button onclick="loadSampleCase('arriendo')" class="p-2 text-left bg-slate-50 hover:bg-purple-50 hover:border-purple-200 border border-slate-200 rounded-lg text-[11px] font-medium transition text-slate-700">
+                  🏠 <strong>Arriendo:</strong> Cánones Mora
+                </button>
+                <button onclick="loadSampleCase('salud')" class="p-2 text-left bg-slate-50 hover:bg-rose-50 hover:border-rose-200 border border-slate-200 rounded-lg text-[11px] font-medium transition text-slate-700">
+                  🏥 <strong>Salud:</strong> Negativa EPS
+                </button>
+                <button onclick="loadSampleCase('datacredito')" class="p-2 text-left bg-slate-50 hover:bg-blue-50 hover:border-blue-200 border border-slate-200 rounded-lg text-[11px] font-medium transition text-slate-700">
+                  📑 <strong>Habeas:</strong> Datacrédito
+                </button>
+              </div>
+            </div>
+
+            <!-- Botón de Ejecución -->
+            <button 
+              id="btnRunAnalysis"
+              onclick="executeCaseAnalysis()" 
+              class="w-full bg-brand-900 hover:bg-brand-950 text-white font-black py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.99] text-xs uppercase tracking-wider">
+              <span>⚖️</span>
+              <span>INVESTIGAR CASO Y SUBSUMIR HECHOS</span>
+              <span class="bg-amber-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded font-mono">EN VIVO</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Panel Derecho: Resultados del Dictamen Multirrama -->
+        <div class="lg:col-span-7">
+          <div id="caseResultContainer" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm min-h-[500px] flex flex-col justify-center">
+            
+            <!-- Estado Vacío Inicial -->
+            <div id="emptyResultState" class="text-center py-12 space-y-4 max-w-md mx-auto">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl">
+                🏛️
+              </div>
+              <h3 class="text-base font-extrabold text-slate-900">
+                Dictamen Jurídico y Multirrama en Espera
+              </h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Escriba los hechos de su caso en el cuadro o haga clic en alguno de los botones de prueba. El sistema ejecutará la subsunción hecho por hecho y presentará el análisis en las 6 ramas del derecho.
+              </p>
+              <div class="pt-2 flex flex-wrap justify-center gap-2">
+                <button onclick="loadSampleCase('vehiculo')" class="text-xs font-semibold text-brand-900 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg border border-brand-200 transition">
+                  Cargar caso de prueba ahora ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- Contenedor Dinámico de Resultados (Se inyecta al responder) -->
+            <div id="activeResultContent" class="hidden space-y-5"></div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- MÓDULO 2: CONSULTA OFICIAL RAMA JUDICIAL DE COLOMBIA (CPNU 23 DÍGITOS)   -->
+    <!-- ======================================================================= -->
+    <section id="view-rama" class="main-view space-y-6 animate-fadeIn">
+      
+      <!-- Cabecera Oficial Rama Judicial -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🏛️</span>
+              <span class="text-xs font-mono font-bold text-amber-300 uppercase tracking-widest">CPNU OFICIAL — RAMA JUDICIAL DE COLOMBIA</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-white mt-1">
+              Consulta de Procesos y Actuaciones Judiciales
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+              Conexión directa con la infraestructura oficial de la Rama Judicial. Búsqueda por número de radicación estándar de 23 dígitos con decodificación DANE inmediata.
+            </p>
+          </div>
+          <a href="https://consultaprocesos.ramajudicial.gov.co/Procesos/NumeroRadicacion" target="_blank" class="text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-2 rounded-xl transition flex items-center gap-1.5">
+            <span>Portal Rama Judicial Oficial</span>
+            <span>↗</span>
+          </a>
+          <button onclick="switchMainTab('vigilancia')" class="text-xs font-semibold bg-amber-400/90 hover:bg-amber-300 text-slate-950 px-3 py-2 rounded-xl transition flex items-center gap-1.5">
+            <span>🛰️ Servicio de Vigilancia (login + pagos)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuadro de Búsqueda de Radicado -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        
+        <div class="max-w-2xl">
+          <label for="radicadoInput" class="text-xs font-black uppercase tracking-wider text-slate-900 block mb-1.5">
+            Número Único de Radicación (23 Dígitos Estándar Nacional):
+          </label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input 
+              id="radicadoInput" 
+              type="text" 
+              maxlength="30"
+              oninput="handleRadicadoInput(this.value)"
+              placeholder="Ej: 11001400301520240012800"
+              value="11001400301520240012800"
+              class="flex-1 text-sm font-mono font-bold text-slate-900 bg-slate-50 border-2 border-slate-200 focus:border-brand-600 rounded-xl p-3 outline-none transition tracking-wide">
+            
+            <button 
+              id="btnQueryProcess"
+              onclick="executeProcessQuery()" 
+              class="bg-brand-900 hover:bg-brand-950 text-white font-bold px-6 py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-sm text-xs uppercase tracking-wider">
+              <span>🔍</span>
+              <span>CONSULTAR EXPEDIENTE</span>
+            </button>
+          </div>
+
+          <!-- Decodificación DANE en tiempo real -->
+          <div id="daneLivePreview" class="mt-2 text-xs font-mono text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex flex-wrap gap-2 items-center">
+            <span class="font-bold text-brand-900">📍 Desglose DANE:</span>
+            <span id="daneCity">Bogotá D.C. (11001)</span> •
+            <span id="daneDespacho">Juzgado Civil Municipal 015</span> •
+            <span id="daneAno">Año: 2024</span>
+          </div>
+        </div>
+
+        <!-- Botones con Radicados Reales de Prueba -->
+        <div class="pt-2 border-t border-slate-100 space-y-1.5">
+          <span class="text-xs font-bold text-slate-500 block">
+            Seleccionar radicados reales de juzgados colombianos para probar:
+          </span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="setRadicadoSample('11001400301520240012800')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-900 border border-slate-200 px-3 py-1.5 rounded-lg font-mono transition">
+              🏛️ 11001400301520240012800 (Juzgado 15 Civil Municipal Bogotá)
+            </button>
+            <button onclick="setRadicadoSample('11001400302520230045100')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-900 border border-slate-200 px-3 py-1.5 rounded-lg font-mono transition">
+              🏛️ 11001400302520230045100 (Juzgado 25 Civil Bogotá)
+            </button>
+            <button onclick="setRadicadoSample('05001400300120240008500')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-900 border border-slate-200 px-3 py-1.5 rounded-lg font-mono transition">
+              🏛️ 05001400300120240008500 (Juzgado 1 Civil Medellín)
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Contenedor de Resultados del Expediente -->
+      <div id="processResultContainer" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm min-h-[300px]">
+        <div class="text-center py-12 text-slate-400 space-y-2">
+          <p class="text-4xl">📂</p>
+          <p class="text-sm font-bold text-slate-600">Ningún expediente consultado aún</p>
+          <p class="text-xs text-slate-400">Presione el botón "Consultar Expediente" para conectar con la Rama Judicial.</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- MÓDULO 3: GENERADOR DE MINUTAS & HERRAMIENTAS LEGALES                   -->
+    <!-- ======================================================================= -->
+    <section id="view-minutas" class="main-view hidden space-y-6 animate-fadeIn">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+    <h2 class="text-lg font-bold text-slate-900 mb-1">📋 Amplio espectro de minutas</h2>
+    <p class="text-sm text-slate-500 mb-4">Incluye contratos atípicos (comodato, NDA, obra) y trámites de familia. Completa y pulsa "Generar" — el escrito aparece abajo para copiar/imprimir.</p>
+    <div id="minutaPending" class="hidden mb-4 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm flex flex-wrap items-center justify-between gap-3">
+      <span class="text-amber-900"><strong>Pago de minuta iniciado</strong> — ref. <span id="minutaPendingRef" class="font-mono"></span>. Después de pagar en Wompi, pulsa el botón para generar tu documento.</span>
+      <button onclick="verificarPagarMinuta()" class="bg-brand-900 hover:bg-brand-950 text-white text-xs font-bold px-4 py-2 rounded-lg">Ya pagué — verificar y generar</button>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="minuta-acc" data-tipo="poder-especial">
+        <button class="minuta-head" onclick="toggleMinuta('poder-especial')">
+          <span class="minuta-title">📜 Poder especial</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-poder-especial" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <input id="x_poder-especial_otorgante" placeholder="Otorgante" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_poder-especial_otorgante_cc" placeholder="C.C." class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_poder-especial_otorgante_direccion" placeholder="Dirección" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_poder-especial_apoderado" placeholder="Abogado" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_poder-especial_apoderado_cc" placeholder="C.C. abogado" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_poder-especial_apoderado_tarjeta" placeholder="Tarjeta profesional" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_poder-especial_asunto" placeholder="Asunto: ej. proceso de familia" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-2">
+        
+          <button onclick="pagarGenerar('poder-especial')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="promesa-compraventa">
+        <button class="minuta-head" onclick="toggleMinuta('promesa-compraventa')">
+          <span class="minuta-title">🏠 Promesa de compraventa</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-promesa-compraventa" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_promesa-compraventa_vendedor" placeholder="Promitente vendedor" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_promesa-compraventa_vendedor_cc" placeholder="C.C." class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_promesa-compraventa_comprador" placeholder="Promitente comprador" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_promesa-compraventa_comprador_cc" placeholder="C.C." class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_promesa-compraventa_inmueble_direccion" placeholder="Dirección del inmueble" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_promesa-compraventa_inmueble_matricula" placeholder="Matrícula inmobiliaria" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_promesa-compraventa_precio" type="number" placeholder="Precio COP" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_promesa-compraventa_forma_pago" placeholder="Forma de pago" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-2">
+          <input id="x_promesa-compraventa_plazo_meses" type="number" placeholder="Plazo (meses)" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_promesa-compraventa_arras" type="number" placeholder="Arras COP" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        
+          <button onclick="pagarGenerar('promesa-compraventa')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="contrato-obra">
+        <button class="minuta-head" onclick="toggleMinuta('contrato-obra')">
+          <span class="minuta-title">🏗️ Contrato de obra</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-contrato-obra" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_contrato-obra_contratante" placeholder="Contratante" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_contrato-obra_contratante_cc" placeholder="C.C./NIT" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_contrato-obra_contratista" placeholder="Contratista" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_contrato-obra_contratista_cc" placeholder="C.C./NIT" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_contrato-obra_obra_descripcion" placeholder="Descripción de la obra" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_contrato-obra_obra_ubicacion" placeholder="Ubicación del predio" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-2">
+          <input id="x_contrato-obra_valor" type="number" placeholder="Valor COP" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_contrato-obra_plazo_meses" type="number" placeholder="Plazo meses" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_contrato-obra_anticipo_pct" type="number" placeholder="Anticipo %" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        
+          <button onclick="pagarGenerar('contrato-obra')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="contrato-comodato">
+        <button class="minuta-head" onclick="toggleMinuta('contrato-comodato')">
+          <span class="minuta-title">🤝 Contrato de comodato (atípico)</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-contrato-comodato" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_contrato-comodato_comodante" placeholder="Comodante" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_contrato-comodato_comodante_cc" placeholder="C.C." class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_contrato-comodato_comodatario" placeholder="Comodatario" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_contrato-comodato_comodatario_cc" placeholder="C.C." class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_contrato-comodato_bien_descripcion" placeholder="Bien entregado" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_contrato-comodato_uso_permitido" placeholder="Uso permitido" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_contrato-comodato_plazo_meses" type="number" placeholder="Plazo (meses)" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-2">
+        
+          <button onclick="pagarGenerar('contrato-comodato')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="acuerdo-confidencialidad">
+        <button class="minuta-head" onclick="toggleMinuta('acuerdo-confidencialidad')">
+          <span class="minuta-title">🔒 Acuerdo de confidencialidad (NDA)</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-acuerdo-confidencialidad" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_acuerdo-confidencialidad_revelador" placeholder="Parte reveladora" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_acuerdo-confidencialidad_revelador_cc" placeholder="C.C./NIT" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_acuerdo-confidencialidad_receptor" placeholder="Parte receptora" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_acuerdo-confidencialidad_receptor_cc" placeholder="C.C./NIT" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_acuerdo-confidencialidad_objeto" placeholder="Objeto del acuerdo" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_acuerdo-confidencialidad_duracion_anios" type="number" placeholder="Duración (años)" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-2">
+        
+          <button onclick="pagarGenerar('acuerdo-confidencialidad')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="divorcio-mutuo-acuerdo">
+        <button class="minuta-head" onclick="toggleMinuta('divorcio-mutuo-acuerdo')">
+          <span class="minuta-title">💑 Divorcio por mutuo acuerdo</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-divorcio-mutuo-acuerdo" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_divorcio-mutuo-acuerdo_conyuge1" placeholder="Cónyuge 1" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_divorcio-mutuo-acuerdo_conyuge1_cc" placeholder="C.C." class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_divorcio-mutuo-acuerdo_conyuge2" placeholder="Cónyuge 2" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_divorcio-mutuo-acuerdo_conyuge2_cc" placeholder="C.C." class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_divorcio-mutuo-acuerdo_matrimonio_fecha" placeholder="Fecha matrimonio" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_divorcio-mutuo-acuerdo_matrimonio_notaria" placeholder="Notaría" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_divorcio-mutuo-acuerdo_hijos" placeholder="Hijos y acuerdos" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_divorcio-mutuo-acuerdo_sociedad_conyugal" placeholder="Sociedad conyugal" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_divorcio-mutuo-acuerdo_acuerdo_visitas" placeholder="Visitas y custodia" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-2">
+        
+          <button onclick="pagarGenerar('divorcio-mutuo-acuerdo')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="leasing">
+        <button class="minuta-head" onclick="toggleMinuta('leasing')">
+          <span class="minuta-title">🚗 Leasing (uso sin compra inmediata)</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-leasing" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_leasing_arrendador" placeholder="Arrendador financiero" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_leasing_arrendatario" placeholder="Arrendatario" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_leasing_bien_descripcion" placeholder="Bien (vehículo, maquinaria…)" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-2">
+          <input id="x_leasing_canon_mensual" type="number" placeholder="Canon mensual COP" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_leasing_plazo_meses" type="number" placeholder="Plazo meses" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_leasing_valor_opcion_compra" type="number" placeholder="Opción compra" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        
+          <button onclick="pagarGenerar('leasing')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="factoring">
+        <button class="minuta-head" onclick="toggleMinuta('factoring')">
+          <span class="minuta-title">💼 Factoring (liquidez por cartera)</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-factoring" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_factoring_cedente" placeholder="Cedente (proveedor)" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_factoring_factor" placeholder="Factor (entidad)" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_factoring_cartera_descripcion" placeholder="Cartera a ceder" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-2">
+          <input id="x_factoring_valor_cartera" type="number" placeholder="Valor cartera" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_factoring_anticipo_pct" type="number" placeholder="Anticipo %" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_factoring_descuento_pct" type="number" placeholder="Descuento %" class="w-1/3 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        
+          <button onclick="pagarGenerar('factoring')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="franquicia">
+        <button class="minuta-head" onclick="toggleMinuta('franquicia')">
+          <span class="minuta-title">🏪 Franquicia (expansión de marca)</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-franquicia" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_franquicia_franquiciante" placeholder="Franquiciante" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_franquicia_franquiciado" placeholder="Franquiciado" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_franquicia_marca" placeholder="Marca" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_franquicia_canon_inicial" type="number" placeholder="Canon de entrada" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_franquicia_regalias_pct" type="number" placeholder="Regalías %" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <div class="flex gap-2 mb-2">
+          <input id="x_franquicia_plazo_anios" type="number" placeholder="Plazo años" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_franquicia_territorio" placeholder="Territorio" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        
+          <button onclick="pagarGenerar('franquicia')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="outsourcing">
+        <button class="minuta-head" onclick="toggleMinuta('outsourcing')">
+          <span class="minuta-title">🧩 Outsourcing (gestión por terceros)</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-outsourcing" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_outsourcing_contratante" placeholder="Cliente" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_outsourcing_proveedor" placeholder="Proveedor/operador" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_outsourcing_servicios" placeholder="Servicios especializados" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <input id="x_outsourcing_sede" placeholder="Sede / operación" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-2">
+          <input id="x_outsourcing_valor_mensual" type="number" placeholder="Valor mensual COP" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_outsourcing_plazo_meses" type="number" placeholder="Plazo meses" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        
+          <button onclick="pagarGenerar('outsourcing')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+      <div class="minuta-acc" data-tipo="joint-venture">
+        <button class="minuta-head" onclick="toggleMinuta('joint-venture')">
+          <span class="minuta-title">🤝 Joint Venture (sin sociedad)</span><span class="minuta-arrow">▸</span>
+        </button>
+        <div id="acc-joint-venture" class="minuta-body hidden">
+          <p class="minuta-price">💳 Generación de esta minuta: <strong>$20.000 COP</strong> por documento · correos .edu.co: 10% de descuento ($18.000)</p>
+
+        <div class="flex gap-2 mb-1.5">
+          <input id="x_joint-venture_parte1" placeholder="Parte 1" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_joint-venture_parte2" placeholder="Parte 2" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        <input id="x_joint-venture_proyecto" placeholder="Proyecto conjunto" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm mb-1.5">
+        <div class="flex gap-2 mb-2">
+          <input id="x_joint-venture_aporte1_pct" type="number" placeholder="Aporte parte 1 %" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+          <input id="x_joint-venture_duracion_meses" type="number" placeholder="Duración meses" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm">
+        </div>
+        
+          <button onclick="pagarGenerar('joint-venture')" class="bg-brand-900 hover:bg-brand-950 text-white text-sm font-bold px-4 py-2.5 rounded-lg w-full">💳 Pagar y generar ($20.000)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+      
+      <!-- Cabecera Minutas -->
+      <div class="bg-gradient-to-r from-teal-950 via-slate-900 to-indigo-950 text-white rounded-2xl p-6 shadow-md border border-slate-800">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg">📄</span>
+              <span class="text-xs font-mono font-bold text-teal-300 uppercase tracking-widest">SUITE JURÍDICA FORMAL</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-white mt-1">
+              Generador de Minutas y Escritos Judiciales
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+              Redacción automatizada conforme a la técnica procesal colombiana (Decreto 2591/91, Ley 1755/15 y Código General del Proceso).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selector de Tipo de Documento -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+        <button onclick="switchDocTab('tutela')" id="docTabBtn-tutela" class="doc-tab-btn bg-brand-900 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+          <span>🏥</span> Acción de Tutela (Salud y Vida)
+        </button>
+        <button onclick="switchDocTab('peticion')" id="docTabBtn-peticion" class="doc-tab-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+          <span>📩</span> Derecho de Petición (Ley 1755/15)
+        </button>
+        <button onclick="switchDocTab('alimentos')" id="docTabBtn-alimentos" class="doc-tab-btn bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+          <span>👶</span> Liquidación Cuota de Alimentos
+        </button>
+      </div>
+
+      <!-- Panel: Tutela -->
+      <div id="docPanel-tutela" class="doc-panel bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+            <span>🏥</span> Formulario de Acción de Tutela con Medida Cautelar
+          </h3>
+          <button onclick="fillTutelaSample()" class="text-xs text-brand-900 font-bold bg-brand-50 hover:bg-brand-100 border border-brand-200 px-3 py-1.5 rounded-lg transition">
+            Cargar Caso de Salud de Prueba ➔
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Nombre Completo del Accionante:</label>
+            <input id="tutNom" type="text" value="Carlos Mario Vélez Zuluaga" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Cédula de Ciudadanía:</label>
+            <input id="tutCC" type="text" value="71.234.567" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Ciudad y Domicilio:</label>
+            <input id="tutCiudad" type="text" value="Bogotá D.C., Calle 100 # 15-20" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Entidad Accionada (EPS / Entidad):</label>
+            <input id="tutAcc" type="text" value="EPS Sanitas S.A.S." class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="font-bold block text-slate-700 mb-1">Derechos Fundamentales Vulnerados:</label>
+            <input id="tutDer" type="text" value="Derecho Fundamental a la Salud (Art. 49 C.P.), Vida Digna y Mínimo Vital" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="font-bold block text-slate-700 mb-1">Hechos Circunstanciados (uno por línea):</label>
+            <textarea id="tutHechos" rows="4" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none leading-relaxed">1. Me encuentro afiliado a EPS Sanitas como cotizante activo.
+2. El médico especialista tratante ordenó el suministro inmediato de Insulina Glargina y programación de cateterismo cardíaco.
+3. La EPS ha negado reiteradamente la entrega aduciendo falta de convenio con el operador logístico, poniendo en riesgo inminente mi vida.</textarea>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="font-bold block text-slate-700 mb-1">Pretensiones Claras:</label>
+            <textarea id="tutPret" rows="2" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">Se ordene a EPS Sanitas la entrega inmediata de los medicamentos prescritos y se declare la medida cautelar urgente de entrega provisional en 24 horas.</textarea>
+          </div>
+        </div>
+
+        <button onclick="generateTutelaDocument()" class="w-full bg-teal-800 hover:bg-teal-900 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-xs">
+          <span>📄</span>
+          <span>PROYECTAR ACCIÓN DE TUTELA JUDICIAL</span>
+        </button>
+      </div>
+
+      <!-- Panel: Derecho de Petición -->
+      <div id="docPanel-peticion" class="doc-panel hidden bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+            <span>📩</span> Formulario de Derecho de Petición (Ley 1755 de 2015)
+          </h3>
+          <button onclick="fillPeticionSample()" class="text-xs text-brand-900 font-bold bg-brand-50 hover:bg-brand-100 border border-brand-200 px-3 py-1.5 rounded-lg transition">
+            Cargar Caso de Colpensiones ➔
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Nombre del Peticionario:</label>
+            <input id="dpNom" type="text" value="María Helena López Gómez" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Cédula de Ciudadanía:</label>
+            <input id="dpCC" type="text" value="52.456.789" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Entidad Destinataria:</label>
+            <input id="dpEntidad" type="text" value="Colpensiones - Administradora Colombiana de Pensiones" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Objeto de la Petición:</label>
+            <input id="dpObjeto" type="text" value="Corrección de Historia Laboral y Acreditación de Semanas Cotizadas" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="font-bold block text-slate-700 mb-1">Hechos y Fundamento:</label>
+            <textarea id="dpHechos" rows="3" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">Cotizo formalmente al Sistema de Seguridad Social desde el año 1998. Al consultar mi extracto actualizado, faltan por computar 145 semanas cotizadas a través de mi empleador Confecciones Andina S.A.S.</textarea>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="font-bold block text-slate-700 mb-1">Solicitudes Concretas:</label>
+            <textarea id="dpSolicitudes" rows="2" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">Se actualice e incluya en la historia laboral las 145 semanas señaladas y se expida copia digital de la resolución de actualización dentro de los 15 días hábiles de ley.</textarea>
+          </div>
+        </div>
+
+        <button onclick="generatePeticionDocument()" class="w-full bg-brand-900 hover:bg-brand-950 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-xs">
+          <span>📄</span>
+          <span>PROYECTAR DERECHO DE PETICIÓN FORMAL</span>
+        </button>
+      </div>
+
+      <!-- Panel: Alimentos -->
+      <div id="docPanel-alimentos" class="doc-panel hidden bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+            <span>👶</span> Liquidador y Minuta de Cuota Alimentaria (Ley 1098 de 2006)
+          </h3>
+          <span class="text-xs bg-purple-100 text-purple-900 font-bold px-2.5 py-1 rounded-lg">Tope Legal: 50% de Ingresos</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Ingreso Mensual del Obligado (COP):</label>
+            <input id="alimIngreso" type="number" value="3800000" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Cantidad de Hijos Menores:</label>
+            <input id="alimHijos" type="number" value="1" min="1" max="6" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Gastos de Vivienda y Alimentación:</label>
+            <input id="alimVivienda" type="number" value="900000" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Gastos de Educación:</label>
+            <input id="alimEducacion" type="number" value="450000" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Gastos de Salud / Recreación:</label>
+            <input id="alimSalud" type="number" value="250000" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+          <div>
+            <label class="font-bold block text-slate-700 mb-1">Otros Gastos Comprobados:</label>
+            <input id="alimOtros" type="number" value="150000" class="w-full border-2 border-slate-200 rounded-lg p-2.5 focus:border-brand-600 outline-none">
+          </div>
+        </div>
+
+        <button onclick="calculateAlimentosFromForm()" class="w-full bg-purple-900 hover:bg-purple-950 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-xs">
+          <span>⚖️</span>
+          <span>CALCULAR CUOTA LEGAL Y GENERAR LIQUIDACIÓN</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- MÓDULO 4: PASARELA DE PAGO OFICIAL BANCOLOMBIA & WOMPI                  -->
+    <!-- ======================================================================= -->
+    <section id="view-pagos" class="main-view hidden space-y-6 animate-fadeIn">
+      
+      <!-- Cabecera Pagos -->
+      <div class="bg-gradient-to-r from-amber-600 via-amber-700 to-slate-900 text-white rounded-2xl p-6 shadow-md border border-amber-500/30">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg">💳</span>
+              <span class="text-xs font-mono font-bold text-amber-200 uppercase tracking-widest">PASARELA DE PAGO OFICIAL</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-white mt-1">
+              Recaudo Oficial Bancolombia & Wompi
+            </h2>
+            <p class="text-xs sm:text-sm text-amber-100 mt-1 max-w-2xl">
+              Los pagos se abonan directamente a la cuenta oficial de Bancolombia del titular o a través del checkout seguro Wompi con PSE, Nequi y Tarjetas.
+            </p>
+          </div>
+          <span class="bg-amber-400 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl uppercase font-mono shadow-xs">
+            100% Garantizado
+          </span>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Tarifas Oficiales -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between space-y-3 hover:border-amber-400 transition">
+          <div>
+            <span class="text-[10px] font-mono font-extrabold bg-blue-50 text-blue-900 border border-blue-200 px-2 py-0.5 rounded uppercase">Inmediata</span>
+            <h3 class="font-extrabold text-sm text-slate-900 mt-2">Consulta Jurídica Exprés</h3>
+            <p class="text-xs text-slate-500 mt-1">Análisis por IA de Altas Cortes + revisión de abogado especialista.</p>
+          </div>
+          <div>
+            <div class="text-xl font-black text-slate-950 font-mono">$ 35.000 <span class="text-xs font-medium text-slate-400">COP</span></div>
+            <button onclick="selectServiceForPayment('consulta_expres', 35000, 'Consulta Jurídica Exprés')" class="w-full mt-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2 rounded-xl transition">
+              Elegir Servicio
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border-2 border-amber-400 shadow-md flex flex-col justify-between space-y-3 relative ring-2 ring-amber-200/50">
+          <div class="absolute -top-2.5 right-4 bg-amber-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">
+            Más Solicitado
+          </div>
+          <div>
+            <span class="text-[10px] font-mono font-extrabold bg-teal-50 text-teal-900 border border-teal-200 px-2 py-0.5 rounded uppercase">Minuta Judicial</span>
+            <h3 class="font-extrabold text-sm text-slate-900 mt-2">Acción de Tutela con Medida</h3>
+            <p class="text-xs text-slate-500 mt-1">Escrito judicial completo, solicitud de medidas cautelares y radicación.</p>
+          </div>
+          <div>
+            <div class="text-xl font-black text-brand-900 font-mono">$ 55.000 <span class="text-xs font-medium text-slate-400">COP</span></div>
+            <button onclick="selectServiceForPayment('tutela_salud_vida', 55000, 'Acción de Tutela con Medida Cautelar')" class="w-full mt-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold py-2 rounded-xl transition shadow-xs">
+              Elegir Servicio
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between space-y-3 hover:border-amber-400 transition">
+          <div>
+            <span class="text-[10px] font-mono font-extrabold bg-indigo-50 text-indigo-900 border border-indigo-200 px-2 py-0.5 rounded uppercase">Administrativo</span>
+            <h3 class="font-extrabold text-sm text-slate-900 mt-2">Derecho de Petición</h3>
+            <p class="text-xs text-slate-500 mt-1">Escrito con términos perentorios bajo Ley 1755 de 2015.</p>
+          </div>
+          <div>
+            <div class="text-xl font-black text-slate-950 font-mono">$ 30.000 <span class="text-xs font-medium text-slate-400">COP</span></div>
+            <button onclick="selectServiceForPayment('derecho_peticion', 30000, 'Derecho de Petición Prioritario')" class="w-full mt-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2 rounded-xl transition">
+              Elegir Servicio
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between space-y-3 hover:border-amber-400 transition">
+          <div>
+            <span class="text-[10px] font-mono font-extrabold bg-purple-50 text-purple-900 border border-purple-200 px-2 py-0.5 rounded uppercase">Mensual</span>
+            <h3 class="font-extrabold text-sm text-slate-900 mt-2">Plan 'Tranquilidad Legal'</h3>
+            <p class="text-xs text-slate-500 mt-1">Monitoreo continuo de 3 procesos + consultas ilimitadas.</p>
+          </div>
+          <div>
+            <div class="text-xl font-black text-slate-950 font-mono">$ 120.000 <span class="text-xs font-medium text-slate-400">COP/mes</span></div>
+            <button onclick="selectServiceForPayment('suscripcion_mensual', 120000, 'Plan Suscripción Mensual')" class="w-full mt-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2 rounded-xl transition">
+              Elegir Servicio
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dos Canales de Pago Claros: Bancolombia Directo vs Wompi -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- CANAL 2: WOMPI COLOMBIA (PSE, NEQUI, TARJETAS) -->
+        <div class="bg-white rounded-2xl p-6 border-2 border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+              <span>⚡</span> PAGO SEGURO VÍA WOMPI (PSE / NEQUI / TARJETAS)
+            </span>
+            <span class="text-[10px] bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded font-mono">PRODUCCIÓN</span>
+          </div>
+
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Pague con PSE (cualquier banco colombiano), cuenta Nequi directa, tarjeta de crédito o débito a través del Widget oficial de Wompi.
+          </p>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Servicio a pagar:</label>
+              <select id="wompiServiceSelect" onchange="onServiceSelectChange(this.value)" class="w-full border-2 border-slate-200 rounded-lg p-2 bg-white text-xs font-semibold">
+                <option value="tutela_salud_vida">Acción de Tutela con Medida Cautelar — $ 55.000 COP</option>
+                <option value="consulta_expres">Consulta Jurídica Exprés — $ 35.000 COP</option>
+                <option value="derecho_peticion">Derecho de Petición Prioritario — $ 30.000 COP</option>
+                <option value="minuta_generica">Generación de Minuta (documento) — $ 20.000 COP</option>
+                <option value="suscripcion_mensual">Plan Suscripción Mensual — $ 120.000 COP</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input id="wompiEmail" type="email" value="cliente@consultoriolegal.co" placeholder="Correo electrónico" class="border-2 border-slate-200 rounded-lg p-2 bg-white text-xs">
+              <input id="wompiName" type="text" value="Usuario Consultante" placeholder="Nombre completo" class="border-2 border-slate-200 rounded-lg p-2 bg-white text-xs">
+            </div>
+          </div>
+
+          <button onclick="launchOfficialWompiCheckout()" class="w-full bg-brand-900 hover:bg-brand-950 text-white font-black py-3.5 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-md uppercase tracking-wider">
+            <span>💳</span>
+            <span>PAGAR CON WOMPI (PSE / NEQUI / TARJETA)</span>
+          </button>
+
+          <div id="wompiQuickLinkContainer" class="hidden text-center pt-1">
+            <a id="wompiQuickLink" href="#" target="_blank" class="text-xs font-bold text-brand-700 hover:text-brand-900 underline flex items-center justify-center gap-1">
+              <span>🚀</span> Enlace Directo: Abrir Wompi Checkout Oficial ↗
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE VISUALIZACIÓN DE MINUTA JUDICIAL (PAPEL FORMAL + COPIAR + PDF)   -->
+  <!-- ========================================================================= -->
+  <div id="docModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-fadeIn">
+      
+      <!-- Cabecera del Modal -->
+      <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">📄</span>
+          <div>
+            <h3 id="modalDocTitle" class="text-sm font-bold text-white tracking-tight">Escrito Judicial Formal</h3>
+            <span class="text-[10px] text-slate-400 font-mono">República de Colombia — Rama Judicial</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyModalDocContent()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-xs">
+            <span>📋</span> Copiar Escrito
+          </button>
+          <button onclick="printModalDocContent()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+            <span>🖨️</span> Imprimir / PDF
+          </button>
+          <button onclick="closeDocModal()" class="text-slate-400 hover:text-white text-lg font-bold px-2 py-1 transition">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenido del Documento en Formato Papel Legal -->
+      <div class="p-6 overflow-y-auto flex-1 bg-slate-50">
+        <pre id="modalDocContent" class="legal-paper p-8 rounded-xl text-xs font-mono text-slate-800 leading-relaxed whitespace-pre-wrap select-all overflow-x-auto"></pre>
+      </div>
+
+      <!-- Pie del Modal -->
+      <div class="bg-white px-6 py-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span class="text-slate-500">Documento proyectado con base en la jurisprudencia de las Altas Cortes.</span>
+        <button onclick="closeDocModal()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-4 py-2 rounded-lg transition">
+          Cerrar Visor
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE PAGO OFICIAL WOMPI BANCOLOMBIA (RESOLUCIÓN DE CARGA/SPINNER)      -->
+  <!-- ========================================================================= -->
+  <div id="wompiModal" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-fadeIn">
+      
+      <!-- Cabecera -->
+      <div class="bg-brand-950 text-white px-6 py-4 flex items-center justify-between border-b border-brand-800">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">💳</span>
+          <div>
+            <h3 class="text-sm font-bold text-white tracking-tight">Pasarela Oficial Wompi Bancolombia</h3>
+            <span class="text-[10px] text-emerald-400 font-mono font-bold">● AMBIENTE PRODUCCIÓN — SHA-256</span>
+          </div>
+        </div>
+        <button onclick="closeWompiModal()" class="text-slate-400 hover:text-white text-lg font-bold px-2 py-1 transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Cuerpo -->
+      <div class="p-6 space-y-4 text-xs">
+        <!-- Resumen del Servicio -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500 font-medium">Concepto Legal:</span>
+            <span id="wompiModalServiceName" class="font-bold text-slate-800 text-right">Acción de Tutela con Medida Cautelar</span>
+          </div>
+          <div class="flex justify-between items-center border-t border-slate-200 pt-2">
+            <span class="text-slate-500 font-medium">Tarifa Oficial:</span>
+            <span id="wompiModalAmount" class="text-base font-black text-brand-900">$ 55.000 COP</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500 font-medium">Referencia de Pago:</span>
+            <span id="wompiModalReference" class="font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">CDL-...</span>
+          </div>
+          <div class="flex justify-between items-center border-t border-slate-200 pt-2">
+            <span class="text-slate-500 font-medium">Procesador de pago:</span>
+            <span class="font-bold text-slate-800">Wompi Colombia (PSE · Nequi · Tarjetas)</span>
+          </div>
+        </div>
+
+        <!-- Aviso Informativo -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-start gap-2.5 text-emerald-950">
+          <span class="text-base">🔒</span>
+          <div class="space-y-1">
+            <p class="font-bold text-[11px]">Portal Seguro Oficial Wompi</p>
+            <p class="text-[11px] text-emerald-800 leading-normal">
+              Para garantizar que el pago con PSE, Nequi, Tarjetas o Botón Bancolombia se procese sin bloqueos de seguridad del navegador, la pasarela se abre en el portal oficial de Wompi.
+            </p>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="pt-2 space-y-2">
+          <a id="wompiDirectPayBtn" href="#" target="_blank" onclick="submitWompiForm();" class="w-full bg-brand-900 hover:bg-brand-950 text-white font-extrabold py-3.5 px-4 rounded-xl text-center text-xs flex items-center justify-center gap-2 shadow-lg transition tracking-wider uppercase">
+            <span>🚀</span>
+            <span>ABRIR PORTAL SEGURO DE WOMPI AHORA ↗</span>
+          </a>
+
+          <button onclick="tryWompiEmbeddedWidget()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition text-[11px] flex items-center justify-center gap-1.5">
+            <span>🪟</span>
+            <span>O abrir como Widget emergente</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pie -->
+      <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500">
+        <span>Llave: pub_prod_03G4YI45U70f4jX4h7TpDlgtxyMqC80e</span>
+        <button onclick="closeWompiModal()" class="text-slate-500 hover:text-slate-800 font-bold underline">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BARRA DE ASISTENCIA FLOTANTE SI EL WIDGET SE QUEDA CARGANDO -->
+  <div id="wompiStuckHelper" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999999] hidden bg-slate-900 text-white text-xs font-semibold px-5 py-3 rounded-2xl shadow-2xl border-2 border-amber-400 flex items-center gap-3 animate-fadeIn">
+    <span>⏳ ¿La pasarela se quedó en el círculo de carga?</span>
+    <button onclick="openDirectWompiUrl()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 shadow transition">
+      <span>🚀</span> Abrir en Portal Directo Wompi ↗
+    </button>
+    <button onclick="dismissWompiOverlay()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-2.5 py-1.5 rounded-lg text-xs transition">
+      ✕ Cerrar
+    </button>
+  </div>
+
+  <!-- FORMULARIO OFICIAL HTML WOMPI WEB CHECKOUT (ESTÁNDAR NATIVO SIN ERRORES DE CLOUDFRONT) -->
+  <form id="wompiOfficialForm" action="https://checkout.wompi.co/p/" method="GET" target="_blank" class="hidden">
+    <input type="hidden" name="public-key" id="wompiFormPublicKey">
+    <input type="hidden" name="currency" value="COP">
+    <input type="hidden" name="amount-in-cents" id="wompiFormAmount">
+    <input type="hidden" name="reference" id="wompiFormReference">
+    <input type="hidden" name="signature:integrity" id="wompiFormSignature">
+    <input type="hidden" name="customer-data:email" id="wompiFormEmail">
+    <input type="hidden" name="customer-data:full-name" id="wompiFormName">
+    <input type="hidden" name="customer-data:phone-number" id="wompiFormPhone">
+    <input type="hidden" name="customer-data:phone-number-prefix" value="+57">
+  </form>
+
+  <!-- TOAST FLOTANTE DE NOTIFICACIÓN -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 hidden bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-slate-700 animate-fadeIn">
+    <span id="toastIcon">✅</span>
+    <span id="toastMessage">Acción completada</span>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SCRIPTS Y LÓGICA DE INTERACCIÓN                                           -->
+  <!-- ========================================================================= -->
+  <script>
+    // --- ESTADO GLOBAL ---
+    let lastCaseAnalysisData = null;
+    let currentProcessActuaciones = [];
+    let currentWompiSession = null;
+    let wompiWidgetTimer = null;
+    const WOMPI_PUBLIC_KEY = 'pub_prod_03G4YI45U70f4jX4h7TpDlgtxyMqC80e';
+
+    // --- CASOS DE MUESTRA REALES ---
+    const sampleCases = {
+      vehiculo: "El 20 de enero compré un vehículo Mazda 3 modelo 2018 al señor Fernando Restrepo por valor de 42 millones de pesos mediante contrato de compraventa con entrega inmediata. A los tres días el motor se fundió súbitamente por una fuga de compresión y fisura oculta en la culata que ya existía al momento de la venta y fue disimulada. Fernando se niega rotundamente a responder por la garantía legal, a reparar el vehículo o a devolver el dinero pagado.",
+      despido: "Trabajo para la empresa Plastitodo S.A.S. en Bogotá como operario de maquinaria desde hace 3 años con contrato a término indefinido y salario de 2.800.000 pesos. El día 10 de julio sufrí un accidente laboral que me ocasionó hernia discal y la EPS Sanitas me expidió incapacidad médica vigente por 30 días. Ayer 15 de agosto la gerencia me notificó carta de despido sin justa causa y sin solicitar la autorización previa del Ministerio del Trabajo (Art. 26 Ley 361 de 1997).",
+      deuda: "El día 15 de marzo le presté 15 millones de pesos al señor Carlos Gómez mediante una letra de cambio con vencimiento perentorio el 15 de septiembre. A la fecha de hoy han transcurrido los plazos pactados y Carlos se niega a pagar el capital y los intereses de mora, desconociendo las llamadas y requerimientos.",
+      arriendo: "Tengo en arriendo un apartamento ubicado en el norte de Bogotá al señor Mario Duarte con canon mensual de 1.900.000 pesos. Mario adeuda cuatro meses consecutivos de cánones y tiene los servicios públicos suspendidos por falta de pago. Le solicité la restitución pacífica y voluntaria del inmueble y se niega a desocupar.",
+      salud: "La EPS Sanitas me suspendió el suministro de Insulina Glargina y canceló la programación de mi cateterismo cardíaco ordenado con urgencia por mi médico especialista tratante de la Clínica Colombia desde hace más de tres semanas, aduciendo problemas administrativos internos. Mi condición médica empeora cada día.",
+      datacredito: "El banco me realizó un reporte negativo ante Datacrédito y Cifin por una supuesta obligación de tarjeta de crédito que nunca solicité ni firmé, tratándose de una evidente suplantación de identidad. Presenté reclamo formal adjuntando denuncia penal y el banco no ha eliminado el reporte vulnerando mi derecho al buen nombre y habeas data."
+    };
+
+    // ==========================================
+    // 1. GESTIÓN DE NAVEGACIÓN ENTRE VISTAS
+    // ==========================================
+    function switchMainTab(tabId) {
+      // Acceso restringido: todo servicio requiere registro o ingreso.
+      if (!getToken()) { showAuth('Para acceder a cualquiera de los servicios, primero crea tu cuenta o ingresa.'); return; }
+      if (tabId === 'account') loadMyAccount();
+      document.querySelectorAll('.main-view').forEach(v => v.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+
+      const activeView = document.getElementById('view-' + tabId);
+      const activeBtn = document.getElementById('navBtn-' + tabId);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeBtn) activeBtn.classList.add('tab-active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchDocTab(tabId) {
+      document.querySelectorAll('.doc-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.doc-tab-btn').forEach(b => {
+        b.classList.remove('bg-brand-900', 'text-white');
+        b.classList.add('bg-white', 'text-slate-700');
+      });
+
+      const activePanel = document.getElementById('docPanel-' + tabId);
+      const activeBtn = document.getElementById('docTabBtn-' + tabId);
+      if (activePanel) activePanel.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white', 'text-slate-700');
+        activeBtn.classList.add('bg-brand-900', 'text-white');
+      }
+    }
+
+    function updateCharCounter() {
+      const text = document.getElementById('caseDescription').value;
+      document.getElementById('charCounter').innerText = text.length + ' caracteres';
+    }
+
+    function loadSampleCase(key) {
+      if (sampleCases[key]) {
+        const txt = document.getElementById('caseDescription');
+        txt.value = sampleCases[key];
+        updateCharCounter();
+        showToast('Caso de prueba cargado. Presione "Investigar Caso".', '💡');
+      }
+    }
+
+    // ==========================================
+    // 2. EJECUCIÓN DEL ANÁLISIS JURÍDICO MULTIRRAMA
+    // ==========================================
+    async function executeCaseAnalysis() {
+      logHistory('sugerencia', 'Diagnóstico jurídico por 6 ramas', 'Análisis fáctico solicitado.');
+      const text = document.getElementById('caseDescription').value.trim();
+      if (!text) {
+        showToast('Por favor describa los hechos de su caso en el cuadro.', '⚠️');
+        return;
+      }
+
+      const emptyState = document.getElementById('emptyResultState');
+      const activeContent = document.getElementById('activeResultContent');
+      const btn = document.getElementById('btnRunAnalysis');
+
+      emptyState.classList.add('hidden');
+      activeContent.classList.remove('hidden');
+      activeContent.innerHTML = `
+        <div class="text-center py-16 space-y-4">
+          <div class="inline-block animate-spin text-4xl">⚖️</div>
+          <h4 class="text-sm font-extrabold text-brand-900 uppercase tracking-wide">
+            Investigando Caso en las 6 Ramas del Derecho...
+          </h4>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+            Extrayendo partes, tiempos, valores y contrastando con Código Civil, Estatuto del Consumidor, CST y precedentes de Altas Cortes.
+          </p>
+        </div>
+      `;
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/api/v1/cases/classify', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ description: text })
+        });
+        
+        if (!response.ok) throw new Error('Error en servidor');
+        const data = await response.json();
+        lastCaseAnalysisData = data;
+        renderCaseAnalysisResults(data);
+        showToast('¡Investigación multirrama completada con éxito!', '✅');
+      } catch (err) {
+        activeContent.innerHTML = `
+          <div class="p-6 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-900 space-y-2">
+            <strong>Error de conexión al servidor:</strong>
+            <p>No se pudo conectar con el motor jurídico. Verifique que el backend esté en ejecución.</p>
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderCaseAnalysisResults(data) {
+      const container = document.getElementById('activeResultContent');
+      const mr = data.investigacion_multirrama;
+      const fact = data.analisis_factico_detallado || {};
+      const hechosDes = data.hechos_desarrollados || fact.hechos_desarrollados || [];
+      const pret = data.pretensiones_partes || fact.pretensiones_partes || {};
+      const normas = data.normas_sustantivas_especificas || fact.normas_sustantivas_especificas || [];
+      const prob = data.problema_juridico_detallado || fact.problema_juridico_detallado || {};
+
+      // 1. Tarjetas de las 6 Ramas
+      let ramasCardsHtml = '';
+      if (mr && mr.ramas_investigadas) {
+        ramasCardsHtml = mr.ramas_investigadas.map(r => {
+          const score = r.viabilidad_score;
+          const prioridad = r.nivel_prioridad || 'NO_APLICA';
+          const isPref = prioridad === 'PREFERENTE';
+          const barColor = score >= 70 ? 'bg-emerald-600' : (score >= 40 ? 'bg-amber-500' : 'bg-slate-400');
+          const badgeClass = isPref ? 'bg-amber-100 text-amber-950 border-amber-300 font-black' : (prioridad === 'CONCURRENTE' ? 'bg-emerald-100 text-emerald-950 border-emerald-300 font-bold' : 'bg-slate-100 text-slate-700 border-slate-200 font-medium');
+
+          return `
+            <div class="bg-white border-2 ${isPref ? 'border-amber-400 shadow-sm ring-2 ring-amber-100' : 'border-slate-200'} rounded-xl p-4 space-y-2.5 transition hover:border-brand-600">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-base">${r.icono || '🏛️'}</span>
+                  <span class="text-xs font-black text-slate-900 uppercase">${r.nombre_rama}</span>
+                  <span class="text-[10px] border px-2 py-0.5 rounded uppercase ${badgeClass}">${prioridad}</span>
+                </div>
+                <span class="text-xs font-mono font-black ${score >= 70 ? 'text-emerald-700' : 'text-slate-700'}">Viabilidad: ${score}%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div class="${barColor} h-2 rounded-full" style="width: ${score}%"></div>
+              </div>
+              <p class="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-200/80 leading-relaxed font-medium">
+                ${r.fundamento_juridico || r.analisis_dogmatico}
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+                <div class="bg-indigo-50/70 p-2 rounded-lg border border-indigo-100">
+                  <strong class="text-brand-900 block">⚡ Acción Concreta:</strong>
+                  <span class="text-slate-800">${r.accion_procesal_concreta}</span>
+                </div>
+                <div class="bg-amber-50/70 p-2 rounded-lg border border-amber-100">
+                  <strong class="text-amber-950 block">🏛️ Autoridad & Términos:</strong>
+                  <span class="text-slate-800">${r.autoridad_competente} (${r.terminos_prescripcion_caducidad})</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 2. Matriz de Concurrencia
+      let concurrenciaHtml = '';
+      if (mr && mr.matriz_concurrencia) {
+        const comp = mr.matriz_concurrencia.acciones_simultaneas_compatibles || [];
+        const excl = mr.matriz_concurrencia.acciones_incompatibles_excluyentes || [];
+        concurrenciaHtml = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 space-y-2">
+              <span class="font-extrabold text-emerald-950 block flex items-center gap-1">
+                <span>🟢</span> Acciones Simultáneas Compatibles:
+              </span>
+              <ul class="space-y-1 text-slate-800">
+                ${comp.map(c => `<li class="flex items-start gap-1.5"><span class="text-emerald-600 font-bold">✓</span><span>${c}</span></li>`).join('')}
+              </ul>
+            </div>
+            <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-3 space-y-2">
+              <span class="font-extrabold text-rose-950 block flex items-center gap-1">
+                <span>🔴</span> Acciones Excluyentes / Inadmisibles:
+              </span>
+              <ul class="space-y-1 text-slate-800">
+                ${excl.map(e => `<li class="flex items-start gap-1.5"><span class="text-rose-600 font-bold">✕</span><span>${e}</span></li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+
+      // 3. Montaje Completo del HTML
+      container.innerHTML = `
+        <div class="space-y-5 animate-fadeIn">
+          
+          <!-- Banner de Resultados Principales -->
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-black uppercase px-3 py-1 rounded-lg bg-brand-900 text-white font-mono shadow-xs">
+                ÁREA: ${data.branch.toUpperCase()}
+              </span>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${data.urgency_level === 'ALTA' ? 'bg-rose-100 text-rose-900 border border-rose-200' : 'bg-amber-100 text-amber-900 border border-amber-200'}">
+                Urgencia: ${data.urgency_level}
+              </span>
+            </div>
+            <span class="text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg">
+              🛡️ Subsunción Positiva: <strong>${Math.round(data.confidence * 100)}%</strong>
+            </span>
+          </div>
+
+          <!-- Dictamen Ejecutivo -->
+          ${mr ? `
+            <div class="bg-gradient-to-r from-brand-950 to-slate-900 text-white p-4 rounded-xl space-y-1.5 shadow-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono text-amber-300 font-bold uppercase">Dictamen Ejecutivo Cruzado</span>
+                <span class="text-[10px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded uppercase font-mono">Vía Óptima: ${mr.rama_principal_recomendada}</span>
+              </div>
+              <p class="text-xs text-slate-200 italic leading-relaxed font-serif">"${mr.dictamen_ejecutivo}"</p>
+            </div>
+          ` : ''}
+
+          <!-- PESTAÑAS SECUNDARIAS DEL RESULTADO -->
+          <div class="flex flex-wrap gap-1.5 border-b border-slate-200 pb-2">
+            <button onclick="switchResultTab('res-ramas')" id="resTabBtn-ramas" class="res-subtab-btn bg-brand-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+              🏛️ 6 Ramas del Derecho
+            </button>
+            <button onclick="switchResultTab('res-concurrencia')" id="resTabBtn-concurrencia" class="res-subtab-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              🔀 Concurrencia & Ruta
+            </button>
+            <button onclick="switchResultTab('res-pilares')" id="resTabBtn-pilares" class="res-subtab-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              📌 Los 4 Pilares Fácticos
+            </button>
+            <button onclick="switchResultTab('res-riesgos')" id="resTabBtn-riesgos" class="res-subtab-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              🛡️ Riesgos & Blindaje
+            </button>
+          </div>
+
+          <!-- Pestaña 1: Las 6 Ramas -->
+          <div id="resTab-ramas" class="res-subtab space-y-3">
+            ${ramasCardsHtml}
+          </div>
+
+          <!-- Pestaña 2: Concurrencia y Ruta -->
+          <div id="resTab-concurrencia" class="res-subtab hidden space-y-4">
+            ${concurrenciaHtml}
+            ${mr && mr.ruta_procesal_fases ? `
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                <span class="text-xs font-extrabold text-slate-900 block">🗺️ Ruta Procesal Escalonada:</span>
+                ${mr.ruta_procesal_fases.map(f => `
+                  <div class="text-xs bg-white p-3 rounded-lg border border-slate-200/80 space-y-1">
+                    <div class="flex justify-between items-center font-bold text-brand-900">
+                      <span>FASE ${f.fase}: ${f.titulo}</span>
+                      <span class="font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded">⏱️ ${f.plazo}</span>
+                    </div>
+                    <p class="text-slate-600 text-[11px]">🏛️ Despacho: ${f.entidad_o_despacho}</p>
+                    <ul class="pt-1 space-y-1 text-slate-700 text-[11px]">
+                      ${(f.acciones || []).map(a => `<li>• ${a}</li>`).join('')}
+                    </ul>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Pestaña 3: Los 4 Pilares -->
+          <div id="resTab-pilares" class="res-subtab hidden space-y-4">
+            
+            <!-- Hechos Desarrollados -->
+            <div class="space-y-2">
+              <span class="text-xs font-bold text-slate-900 block">📌 Hechos Circunstanciados:</span>
+              <div class="space-y-2">
+                ${hechosDes.map(h => `
+                  <div class="text-xs bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
+                    <div class="flex justify-between items-center font-bold text-slate-900">
+                      <span>HECHO #${h.numero}: ${h.titulo}</span>
+                      <span class="font-mono text-[10px] text-amber-900 bg-amber-50 px-2 py-0.5 rounded">⏱️ ${h.fecha_o_tiempo}</span>
+                    </div>
+                    <p class="text-slate-700">${h.descripcion_desarrollada}</p>
+                    <div class="text-[11px] text-indigo-950 pt-1">
+                      <strong>⚖️ Impacto:</strong> ${h.impacto_juridico} | <strong>📂 Prueba:</strong> ${h.medio_probatorio}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Problema Jurídico Altas Cortes -->
+            <div class="bg-indigo-950 text-white p-4 rounded-xl space-y-2">
+              <span class="text-[10px] font-mono text-amber-300 font-bold uppercase">🎯 Problema Jurídico (Rigor Altas Cortes)</span>
+              <p class="text-xs font-semibold leading-relaxed font-serif">${prob.pregunta_principal || data.problema_juridico}</p>
+              <div class="text-[11px] text-indigo-200 border-t border-indigo-800 pt-2 italic">
+                Criterio: ${prob.criterio_decision || 'Doctrina jurisprudencial vinculante de la Corte Constitucional y CSJ.'}
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Pestaña 4: Riesgos & Blindaje -->
+          <div id="resTab-riesgos" class="res-subtab hidden space-y-3">
+            ${mr && mr.riesgos_y_blindaje ? mr.riesgos_y_blindaje.map(rg => `
+              <div class="text-xs bg-white border border-slate-200 rounded-xl p-3 space-y-1.5 shadow-2xs">
+                <div class="text-rose-950 font-bold flex items-center gap-1.5">
+                  <span>⚠️</span>
+                  <span>Excepción Prevista: ${rg.riesgo || rg.riesgo_o_excepcion}</span>
+                </div>
+                ${rg.impacto ? `<p class="text-[11px] text-slate-600 pl-4">Impacto: ${rg.impacto}</p>` : ''}
+                <div class="bg-emerald-50/80 p-2 rounded-lg border border-emerald-200 text-emerald-950 flex items-start gap-1.5">
+                  <span class="font-bold">🛡️ Blindaje Probatorio:</span>
+                  <span>${rg.estrategia_blindaje || rg.blindaje_probatorio}</span>
+                </div>
+              </div>
+            `).join('') : '<p class="text-xs text-slate-500 italic">No se reportaron excepciones complejas.</p>'}
+          </div>
+
+          <!-- BOTONES DE ACCIÓN DIRECTA -->
+          <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+            <button onclick="generateCustomMinuteFromAnalysis()" class="flex-1 bg-brand-900 hover:bg-brand-950 text-white font-black py-3.5 px-4 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-md uppercase tracking-wider">
+              <span>📄</span>
+              <span>VER MINUTA JUDICIAL COMPLETA</span>
+            </button>
+            <button onclick="switchMainTab('pagos')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black py-3.5 px-6 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider">
+              <span>💳</span>
+              <span>FORMALIZAR / RADICAR</span>
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function switchResultTab(tabId) {
+      document.querySelectorAll('.res-subtab').forEach(t => t.classList.add('hidden'));
+      document.querySelectorAll('.res-subtab-btn').forEach(b => {
+        b.classList.remove('bg-brand-900', 'text-white');
+        b.classList.add('bg-slate-100', 'text-slate-700');
+      });
+
+      const activeTab = document.getElementById(tabId);
+      const activeBtn = document.getElementById(tabId.replace('resTab-', 'resTabBtn-'));
+      if (activeTab) activeTab.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+        activeBtn.classList.add('bg-brand-900', 'text-white');
+      }
+    }
+
+    // ==========================================
+    // 3. GENERADOR DE MINUTA COMPLETA A PARTIR DEL CASO
+    // ==========================================
+    function generateCustomMinuteFromAnalysis() {
+      if (!lastCaseAnalysisData) {
+        showToast('Analice primero el caso para proyectar la minuta.', '⚠️');
+        return;
+      }
+      const data = lastCaseAnalysisData;
+      const fact = data.analisis_factico_detallado || {};
+      const mr = data.investigacion_multirrama;
+      const despacho = (data.estrategia_procesal && data.estrategia_procesal.despacho) || 'Juez Civil / Constitucional de Reparto';
+      const accion = (data.estrategia_procesal && data.estrategia_procesal.accion) || 'Acción Judicial y Restitución de Derechos';
+
+      let contraparte = 'LA CONTRAPARTE DEMANDADA';
+      if (fact.sujetos && fact.sujetos.length > 0) {
+        contraparte = fact.sujetos[0].replace('Persona: ', '').replace('Entidad: ', '').replace('Empresa: ', '');
+      }
+
+      // Hechos formateados
+      let hechosTxt = '';
+      const hechosList = data.hechos_desarrollados || fact.hechos_desarrollados || [];
+      if (hechosList.length > 0) {
+        hechosTxt = hechosList.map(h => 
+          `HECHO #${h.numero} (${h.titulo}):\n` +
+          `Fecha/Tiempo: ${h.fecha_o_tiempo} | Sujetos: ${h.sujetos}\n` +
+          `${h.descripcion_desarrollada}\n` +
+          `Impacto Jurídico: ${h.impacto_juridico} | Soporte Probatorio: ${h.medio_probatorio}`
+        ).join('\n\n');
+      } else {
+        hechosTxt = document.getElementById('caseDescription').value;
+      }
+
+      // Pretensiones
+      let pretTxt = '1. PRIMERA: Que se declare judicialmente la vulneración o incumplimiento alegado.\n2. SEGUNDA: Que se ordene el restablecimiento íntegro del derecho y el pago de los perjuicios ocasionados.';
+      const pretPartes = data.pretensiones_partes || {};
+      if (pretPartes.demandante_principales && pretPartes.demandante_principales.length > 0) {
+        pretTxt = pretPartes.demandante_principales.map((p, idx) => `${idx + 1}. ${p}`).join('\n');
+      }
+
+      // Normas
+      let normasTxt = '';
+      const normasList = data.normas_sustantivas_especificas || [];
+      if (normasList.length > 0) {
+        normasTxt = normasList.map(n => `• ${n.cuerpo} (${n.articulos}): ${n.regla} -> Aplicación: ${n.aplicacion_caso}`).join('\n\n');
+      } else {
+        normasTxt = (data.marco_normativo || []).map(m => `• ${m}`).join('\n');
+      }
+
+      // Estrategia Multirrama
+      let mrTxt = '';
+      if (mr) {
+        mrTxt = `DICTAMEN EJECUTIVO: ${mr.dictamen_ejecutivo}\n` +
+          `VÍA PRINCIPAL RECOMENDADA: ${mr.rama_principal_recomendada.toUpperCase()}\n\n` +
+          `ACCIONES SIMULTÁNEAS COMPATIBLES:\n` +
+          (mr.matriz_concurrencia.acciones_simultaneas_compatibles || []).map(a => `• ${a}`).join('\n') +
+          `\n\nACCIONES INCOMPATIBLES / EXCLUYENTES:\n` +
+          (mr.matriz_concurrencia.acciones_incompatibles_excluyentes || []).map(a => `• ${a}`).join('\n') +
+          `\n\nRUTA PROCESAL:\n` +
+          (mr.ruta_procesal_fases || []).map(f => `Fase ${f.fase} (${f.titulo}): ${f.entidad_o_despacho}`).join('\n');
+      }
+
+      const doc = `PROYECCIÓN DE ESCRITO JUDICIAL / RECLAMACIÓN FORMAL\n` +
+        `ESTADO: REPÚBLICA DE COLOMBIA — RAMA JUDICIAL\n\n` +
+        `SEÑOR(A):\n` +
+        `${despacho.toUpperCase()}\n` +
+        `Ciudad: [Bogotá, D.C. / Domicilio del Accionante]\n\n` +
+        `PARTE DEMANDANTE / ACCIONANTE: [Nombre del Consultante]\n` +
+        `C.C. No. [Número de Documento]\n` +
+        `PARTE DEMANDADA / ACCIONADA: ${contraparte}\n` +
+        `ACCIÓN A INCOAR: ${accion}\n\n` +
+        `Yo, [Nombre del Consultante], mayor de edad, domiciliado en esta ciudad, presento formal ${accion} en contra de ${contraparte}, con fundamento en los siguientes hechos, fundamentos y pretensiones:\n\n` +
+        `======================================================================\n` +
+        `I. PROBLEMA JURÍDICO FORMULADO (ESTÁNDAR ALTAS CORTES):\n` +
+        `${data.problema_juridico || '¿Se configuró la afectación a los derechos alegados conforme al ordenamiento jurídico colombiano?'}\n\n` +
+        `======================================================================\n` +
+        `II. HECHOS CIRCUNSTANCIADOS Y CRONOLÓGICOS:\n\n` +
+        `${hechosTxt}\n\n` +
+        `======================================================================\n` +
+        `III. PRETENSIONES:\n\n` +
+        `${pretTxt}\n\n` +
+        `======================================================================\n` +
+        `IV. NORMAS SUSTANTIVAS ESPECÍFICAS APLICABLES:\n\n` +
+        `${normasTxt}\n\n` +
+        (mrTxt ? `======================================================================\n` +
+        `V. ESTRATEGIA MULTIRRAMA Y CONCURRENCIA PROCESAL:\n\n` +
+        `${mrTxt}\n\n` : '') +
+        `======================================================================\n` +
+        `VI. SOLICITUD DE MEDIDA CAUTELAR / PROVISIONAL:\n` +
+        `${(data.estrategia_procesal && data.estrategia_procesal.medida_cautelar) || 'Se solicita el decreto oportuno de medidas cautelares preventivas para asegurar la eficacia del fallo.'}\n\n` +
+        `======================================================================\n` +
+        `VII. JURAMENTO DE LEY:\n` +
+        `Bajo la gravedad de juramento manifiesto que los hechos aquí narrados corresponden a la verdad y que no se ha promovido otra acción idéntica ante ninguna otra autoridad judicial.\n\n` +
+        `Atentamente,\n\n` +
+        `_____________________________________\n` +
+        `[Firma del Consultante / Demandante]\n` +
+        `C.C. No. [__________________________]\n` +
+        `Teléfono: [_________________________]\n` +
+        `Correo: [___________________________]`;
+
+      openDocModal(doc, `Minuta Judicial - ${accion}`);
+    }
+
+    // ==========================================
+    // 4. CONSULTA RAMA JUDICIAL CPNU REAL
+    // ==========================================
+    function handleRadicadoInput(val) {
+      const clean = val.replace(/\D/g, '');
+      const danePreview = document.getElementById('daneLivePreview');
+      if (clean.length >= 5) {
+        const dane = clean.substring(0, 5);
+        let ciudad = dane === '11001' ? 'Bogotá D.C. (11001)' : (dane === '05001' ? 'Medellín (05001)' : `Código DANE ${dane}`);
+        document.getElementById('daneCity').innerText = ciudad;
+      }
+      if (clean.length >= 12) {
+        const despNum = clean.substring(9, 12);
+        document.getElementById('daneDespacho').innerText = `Despacho #${despNum}`;
+      }
+      if (clean.length >= 16) {
+        const ano = clean.substring(12, 16);
+        document.getElementById('daneAno').innerText = `Año: ${ano}`;
+      }
+    }
+
+    function setRadicadoSample(rad) {
+      document.getElementById('radicadoInput').value = rad;
+      handleRadicadoInput(rad);
+      executeProcessQuery();
+    }
+
+    async function executeProcessQuery() {
+      logHistory('proceso', 'Consulta CPNU de radicado', (document.getElementById('radicadoInput') || {}).value || '');
+      const radicado = document.getElementById('radicadoInput').value.trim();
+      if (!radicado) {
+        showToast('Ingrese el número de radicado a consultar.', '⚠️');
+        return;
+      }
+
+      const container = document.getElementById('processResultContainer');
+      const btn = document.getElementById('btnQueryProcess');
+
+      container.innerHTML = `
+        <div class="text-center py-16 space-y-4">
+          <div class="inline-block animate-spin text-4xl">🏛️</div>
+          <h4 class="text-sm font-extrabold text-brand-900 uppercase tracking-wide">
+            Consultando en la Infraestructura Oficial CPNU...
+          </h4>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+            Verificando certificado del Consejo Superior de la Judicatura, decodificando DANE y extrayendo actuaciones.
+          </p>
+        </div>
+      `;
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/v1/monitoring/query-process', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ radicado: radicado })
+        });
+        
+        if (!resp.ok) throw new Error('Error al consultar CPNU');
+        const data = await resp.json();
+        renderProcessQueryResults(data);
+        showToast('Consulta de la Rama Judicial procesada', '✅');
+      } catch (e) {
+        container.innerHTML = `
+          <div class="p-6 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-900 space-y-2">
+            <strong class="font-bold block">Aviso de la Infraestructura Rama Judicial:</strong>
+            <p>El portal CPNU presenta latencia o el expediente se encuentra en reserva judicial. Puede consultar directamente en el portal oficial.</p>
+            <a href="https://consultaprocesos.ramajudicial.gov.co/Procesos/NumeroRadicacion" target="_blank" class="text-brand-900 underline font-bold inline-block pt-1">
+              Abrir Consulta Procesos Rama Judicial Oficial ↗
+            </a>
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderProcessQueryResults(data) {
+      const container = document.getElementById('processResultContainer');
+      currentProcessActuaciones = data.actuaciones || [];
+      const desglose = data.desglose_radicado || {};
+
+      let actuacionesHtml = '';
+      if (currentProcessActuaciones.length > 0) {
+        actuacionesHtml = currentProcessActuaciones.map(act => `
+          <tr class="hover:bg-slate-50/80 transition border-b border-slate-100 text-xs">
+            <td class="p-3 font-mono font-bold text-slate-900 whitespace-nowrap">${act.fecha_actuacion}</td>
+            <td class="p-3 font-semibold text-brand-900">${act.actuacion}</td>
+            <td class="p-3 text-slate-600 leading-relaxed">${act.anotacion || '<span class="italic text-slate-400">Sin anotación</span>'}</td>
+            <td class="p-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${act.fecha_registro || '-'}</td>
+          </tr>
+        `).join('');
+      } else {
+        actuacionesHtml = `
+          <tr>
+            <td colspan="4" class="p-6 text-center text-xs text-slate-500 italic bg-slate-50">
+              El servidor CPNU no reporta actuaciones públicas indexadas en este momento para este radicado (expediente en reparto o reserva de menores/penal).
+            </td>
+          </tr>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-4 animate-fadeIn">
+          
+          <!-- Encabezado del Proceso -->
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-black bg-brand-900 text-white px-2.5 py-0.5 rounded">
+                  ${data.radicado}
+                </span>
+                <span class="text-xs font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">
+                  ${data.estado_proceso || 'ACTIVO'}
+                </span>
+              </div>
+              <h3 class="text-sm font-black text-slate-900 mt-1">${data.despacho}</h3>
+              <p class="text-xs text-slate-500">📍 ${data.ciudad || desglose.ciudad || 'Colombia'} • ${data.departamento || desglose.departamento || ''}</p>
+            </div>
+            <div class="text-right text-xs">
+              <span class="text-slate-500 block">Sujetos Procesales:</span>
+              <strong class="text-slate-900">${data.sujetos_procesales || 'En verificación'}</strong>
+            </div>
+          </div>
+
+          <!-- Resumen Oficial -->
+          <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100 text-xs text-indigo-950 flex items-start gap-2">
+            <span>ℹ️</span>
+            <p class="leading-relaxed">${data.resumen_juridico}</p>
+          </div>
+
+          <!-- Barra de Filtro de Actuaciones -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2">
+            <span class="text-xs font-bold text-slate-700">Historial de Actuaciones (${currentProcessActuaciones.length}):</span>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <input 
+                id="actSearch" 
+                type="text" 
+                oninput="filterActuaciones(this.value)"
+                placeholder="Buscar en actuaciones..." 
+                class="text-xs border border-slate-200 rounded-lg p-2 w-full sm:w-60 focus:border-brand-600 outline-none">
+              <button onclick="exportActuacionesToTxt()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-2 rounded-lg transition whitespace-nowrap">
+                📥 Exportar TXT
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabla de Actuaciones -->
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100/90 text-slate-700 font-extrabold text-[11px] uppercase border-b border-slate-200">
+                  <th class="p-3">Fecha Actuación</th>
+                  <th class="p-3">Actuación Oficial</th>
+                  <th class="p-3">Anotación del Despacho</th>
+                  <th class="p-3">Fecha Registro</th>
+                </tr>
+              </thead>
+              <tbody id="actuacionesTableBody">
+                ${actuacionesHtml}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function filterActuaciones(query) {
+      const q = query.toLowerCase().trim();
+      const tbody = document.getElementById('actuacionesTableBody');
+      if (!tbody) return;
+
+      const filtered = currentProcessActuaciones.filter(a => 
+        (a.actuacion && a.actuacion.toLowerCase().includes(q)) ||
+        (a.anotacion && a.anotacion.toLowerCase().includes(q)) ||
+        (a.fecha_actuacion && a.fecha_actuacion.toLowerCase().includes(q))
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-xs text-slate-500 italic">No se encontraron actuaciones con el criterio '${query}'.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(act => `
+        <tr class="hover:bg-slate-50/80 transition border-b border-slate-100 text-xs">
+          <td class="p-3 font-mono font-bold text-slate-900 whitespace-nowrap">${act.fecha_actuacion}</td>
+          <td class="p-3 font-semibold text-brand-900">${act.actuacion}</td>
+          <td class="p-3 text-slate-600 leading-relaxed">${act.anotacion || '<span class="italic text-slate-400">Sin anotación</span>'}</td>
+          <td class="p-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${act.fecha_registro || '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function exportActuacionesToTxt() {
+      if (!currentProcessActuaciones || currentProcessActuaciones.length === 0) {
+        showToast('No hay actuaciones para exportar', '⚠️');
+        return;
+      }
+      const rad = document.getElementById('radicadoInput').value;
+      let txt = `EXPEDIENTE JUDICIAL - RAMA JUDICIAL DE COLOMBIA (CPNU)\n` +
+        `RADICADO: ${rad}\n` +
+        `FECHA DE EXPORTACIÓN: ${new Date().toLocaleString('es-CO')}\n\n` +
+        `HISTORIAL DE ACTUACIONES:\n` +
+        `======================================================================\n`;
+
+      currentProcessActuaciones.forEach((a, idx) => {
+        txt += `[${idx + 1}] FECHA: ${a.fecha_actuacion} | REGISTRO: ${a.fecha_registro || '-'}\n` +
+               `ACTUACIÓN: ${a.actuacion}\n` +
+               `ANOTACIÓN: ${a.anotacion || 'Sin anotación'}\n` +
+               `----------------------------------------------------------------------\n`;
+      });
+
+      const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Expediente_${rad}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Archivo TXT descargado con éxito', '📥');
+    }
+
+    // ==========================================
+    // 5. GENERADORES DE MINUTAS (TUTELA, PETICIÓN, ALIMENTOS)
+    // ==========================================
+    function fillTutelaSample() {
+      document.getElementById('tutNom').value = 'Carlos Mario Vélez Zuluaga';
+      document.getElementById('tutCC').value = '71.234.567 de Bogotá';
+      document.getElementById('tutCiudad').value = 'Bogotá D.C., Calle 100 # 15-20';
+      document.getElementById('tutAcc').value = 'EPS Sanitas S.A.S.';
+      document.getElementById('tutDer').value = 'Derecho a la Salud (Art. 49 C.P.), Vida Digna y Mínimo Vital';
+      showToast('Datos de tutela cargados', '💡');
+    }
+
+    async function generateTutelaDocument() {
+      logHistory('documento', 'Minuta generada: Acción de Tutela', '');
+      const nom = document.getElementById('tutNom').value;
+      const cc = document.getElementById('tutCC').value;
+      const ciudad = document.getElementById('tutCiudad').value;
+      const acc = document.getElementById('tutAcc').value;
+      const der = document.getElementById('tutDer').value;
+      const hechos = document.getElementById('tutHechos').value.split('\n').filter(h => h.trim().length > 0);
+      const pret = document.getElementById('tutPret').value.split('\n').filter(p => p.trim().length > 0);
+
+      try {
+        const resp = await fetch('/api/v1/documents/tutela', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            accionante_nombre: nom,
+            accionante_identificacion: cc,
+            accionante_ciudad: ciudad,
+            accionante_direccion: ciudad,
+            accionante_email: 'consultante@legal.co',
+            accionado_nombre: acc,
+            derechos_vulnerados: der.split(',').map(d => d.trim()),
+            hechos: hechos,
+            pretensiones: pret,
+            medida_cautelar_urgente: true
+          })
+        });
+        if (!resp.ok) throw new Error('Error en API');
+        const data = await resp.json();
+        openDocModal(data.content, data.title);
+      } catch (e) {
+        const hoy = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+        const doc = `ACCIÓN DE TUTELA - DECRETO 2591 DE 1991\n\n` +
+          `Señor\nJUEZ CONSTITUCIONAL DE REPARTO\nCiudad: ${ciudad}\nFecha: ${hoy}\n\n` +
+          `ACCIONANTE: ${nom} (C.C. ${cc})\nACCIONADO: ${acc}\n\n` +
+          `I. HECHOS:\n${hechos.join('\n')}\n\n` +
+          `II. DERECHOS VULNERADOS: ${der}\n\n` +
+          `III. PRETENSIONES:\n${pret.join('\n')}\n\n` +
+          `IV. MEDIDA CAUTELAR URGENTE: Se ordene la suspensión provisional inmediata de la conducta vulneradora.\n\n` +
+          `V. JURAMENTO: Manifiesto bajo gravedad de juramento que no he presentado otra acción por los mismos hechos.\n\n` +
+          `Atentamente,\n${nom}\nC.C. ${cc}`;
+        openDocModal(doc, `Acción de Tutela contra ${acc}`);
+      }
+    }
+
+    function fillPeticionSample() {
+      document.getElementById('dpNom').value = 'María Helena López Gómez';
+      document.getElementById('dpCC').value = '52.456.789 de Medellín';
+      document.getElementById('dpEntidad').value = 'Colpensiones';
+      document.getElementById('dpObjeto').value = 'Corrección de Historia Laboral y Semanas Cotizadas';
+      showToast('Datos de petición cargados', '💡');
+    }
+
+    async function generatePeticionDocument() {
+      logHistory('documento', 'Minuta generada: Derecho de Petición', '');
+      const nom = document.getElementById('dpNom').value;
+      const cc = document.getElementById('dpCC').value;
+      const entidad = document.getElementById('dpEntidad').value;
+      const objeto = document.getElementById('dpObjeto').value;
+      const hechos = document.getElementById('dpHechos').value.split('\n').filter(h => h.trim().length > 0);
+      const solicitudes = document.getElementById('dpSolicitudes').value.split('\n').filter(s => s.trim().length > 0);
+
+      try {
+        const resp = await fetch('/api/v1/documents/derecho-peticion', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            solicitante_nombre: nom,
+            solicitante_identificacion: cc,
+            solicitante_direccion: 'Carrera 50 # 30-10, Medellín',
+            solicitante_email: 'peticionario@legal.co',
+            entidad_destinataria: entidad,
+            objeto_peticion: objeto,
+            hechos: hechos,
+            solicitud_especifica: solicitudes
+          })
+        });
+        if (!resp.ok) throw new Error('Error en API');
+        const data = await resp.json();
+        openDocModal(data.content, data.title);
+      } catch (e) {
+        const hoy = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+        const doc = `DERECHO DE PETICIÓN EN INTERÉS PARTICULAR\n(Artículo 23 Constitución Política & Ley 1755 de 2015)\n\n` +
+          `Ciudad y Fecha: ${hoy}\n\n` +
+          `Señores:\n${entidad}\nCiudad\n\n` +
+          `ASUNTO: Derecho de Petición - ${objeto}\n\n` +
+          `Yo, ${nom}, identificado(a) con C.C. ${cc}, formulo formal Derecho de Petición con base en los siguientes:\n\n` +
+          `I. HECHOS:\n${hechos.join('\n')}\n\n` +
+          `II. SOLICITUDES CONCRETAS:\n${solicitudes.join('\n')}\n\n` +
+          `III. TÉRMINO LEGAL DE RESPUESTA: Quince (15) días hábiles conforme al Art. 14 de la Ley 1755 de 2015.\n\n` +
+          `Atentamente,\n${nom}\nC.C. ${cc}`;
+        openDocModal(doc, `Derecho de Petición ante ${entidad}`);
+      }
+    }
+
+    async function calculateAlimentosFromForm() {
+      logHistory('documento', 'Minuta generada: Liquidación de Alimentos', '');
+      const ingreso = parseFloat(document.getElementById('alimIngreso').value) || 0;
+      const hijos = parseInt(document.getElementById('alimHijos').value) || 1;
+      const viv = parseFloat(document.getElementById('alimVivienda').value) || 0;
+      const edu = parseFloat(document.getElementById('alimEducacion').value) || 0;
+      const sal = parseFloat(document.getElementById('alimSalud').value) || 0;
+      const otr = parseFloat(document.getElementById('alimOtros').value) || 0;
+
+      try {
+        const resp = await fetch('/api/v1/documents/liquidacion-alimentos', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            hijos_menores_cantidad: hijos,
+            ingreso_mensual_alimentante: ingreso,
+            gastos_educacion: edu,
+            gastos_salud: sal,
+            gastos_alimentacion_vivienda: viv,
+            otros_gastos: otr
+          })
+        });
+        if (!resp.ok) throw new Error('Error en liquidación');
+        const data = await resp.json();
+        openDocModal(data.documento_markdown, `Liquidación Judicial de Cuota Alimentaria (${hijos} menor/es)`);
+      } catch (e) {
+        const tot = viv + edu + sal + otr;
+        const max50 = ingreso * 0.50;
+        const cuota = Math.min(tot * 0.50, max50);
+        const doc = `LIQUIDACIÓN JUDICIAL DE CUOTA ALIMENTARIA\n(Código de la Infancia y la Adolescencia - Ley 1098 de 2006)\n\n` +
+          `1. DATOS DEL ALIMENTANTE:\n` +
+          `Ingreso Mensual Comprobado: $ ${ingreso.toLocaleString('es-CO')} COP\n` +
+          `Tope Legal Máximo Embargable (50%): $ ${max50.toLocaleString('es-CO')} COP\n\n` +
+          `2. GASTOS PROBADOS DEL MENOR:\n` +
+          `Vivienda y Alimentación: $ ${viv.toLocaleString('es-CO')} COP\n` +
+          `Educación: $ ${edu.toLocaleString('es-CO')} COP\n` +
+          `Salud: $ ${sal.toLocaleString('es-CO')} COP\n` +
+          `Otros: $ ${otr.toLocaleString('es-CO')} COP\n` +
+          `TOTAL GASTOS: $ ${tot.toLocaleString('es-CO')} COP\n\n` +
+          `3. DICTAMEN DE CUOTA SUGERIDA:\n` +
+          `Cuota Total Mensual: $ ${Math.round(cuota).toLocaleString('es-CO')} COP\n` +
+          `Por Cada Hijo (${hijos}): $ ${Math.round(cuota / hijos).toLocaleString('es-CO')} COP\n\n` +
+          `Incremento Anual: Conforme al Índice de Precios al Consumidor (IPC).`;
+        openDocModal(doc, 'Liquidación de Cuota de Alimentos');
+      }
+    }
+
+    // ==========================================
+    // 6. PASARELA DE PAGOS (BANCOLOMBIA & WOMPI)
+    // ==========================================
+    function selectServiceForPayment(serviceId, amount, name) {
+      document.getElementById('wompiServiceSelect').value = serviceId;
+      switchMainTab('pagos');
+      showToast(`Servicio seleccionado: ${name} ($${amount.toLocaleString('es-CO')} COP)`, '💳');
+    }
+
+    function onServiceSelectChange(val) {
+      showToast('Tarifa actualizada según catálogo oficial', 'ℹ️');
+    }
+
+    async function launchOfficialWompiCheckout() {
+      const serviceId = document.getElementById('wompiServiceSelect').value;
+      const email = document.getElementById('wompiEmail').value.trim() || 'cliente@consultoriolegal.co';
+      const name = document.getElementById('wompiName').value.trim() || 'Usuario Consultante';
+
+      showToast('Generando pasarela de pago segura Wompi...', '⏳');
+
+      try {
+        const resp = await fetch('/api/v1/payments/create-checkout', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            service_id: serviceId,
+            customer_email: email,
+            customer_name: name,
+            customer_phone: '3101234567'
+          })
+        });
+
+        if (!resp.ok) throw new Error('Error creando sesión');
+        const session = await resp.json();
+        currentWompiSession = session;
+        if (session.descuento_edu_co) {
+          showToast('🎓 Descuento académico 10% aplicado — paga $' + Number(session.amount_in_cop).toLocaleString('es-CO') + ' COP', '🎓');
+        }
+        logHistory('pago', 'Checkout Wompi: ' + (session.service_name || ''), 'Ref ' + (session.reference || ''));
+
+        // Configurar contenido en el Modal de Wompi
+        const serviceNameEl = document.getElementById('wompiModalServiceName');
+        const amountEl = document.getElementById('wompiModalAmount');
+        const refEl = document.getElementById('wompiModalReference');
+        const directBtn = document.getElementById('wompiDirectPayBtn');
+
+        if (serviceNameEl) serviceNameEl.innerText = session.service_name || 'Servicio Jurídico Especializado';
+        if (amountEl) amountEl.innerText = `$ ${Number(session.amount_in_cop).toLocaleString('es-CO')} COP`;
+        if (refEl) refEl.innerText = session.reference;
+        if (directBtn) directBtn.href = session.checkout_url;
+
+        // Configurar Formulario HTML Oficial (Wompi Web Checkout)
+        document.getElementById('wompiFormPublicKey').value = session.public_key || WOMPI_PUBLIC_KEY;
+        document.getElementById('wompiFormAmount').value = session.amount_in_cents;
+        document.getElementById('wompiFormReference').value = session.reference;
+        document.getElementById('wompiFormSignature').value = session.integrity_signature;
+        document.getElementById('wompiFormEmail').value = (session.customer && session.customer.email) || email;
+        document.getElementById('wompiFormName').value = (session.customer && session.customer.full_name) || name;
+        document.getElementById('wompiFormPhone').value = (session.customer && session.customer.phone) || '3101234567';
+
+        // Actualizar botón de acceso rápido en Tab 4
+        const quickContainer = document.getElementById('wompiQuickLinkContainer');
+        const quickLink = document.getElementById('wompiQuickLink');
+        if (quickContainer && quickLink) {
+          quickLink.href = session.checkout_url;
+          quickContainer.classList.remove('hidden');
+        }
+
+        // Abrir Modal de Confirmación
+        const modal = document.getElementById('wompiModal');
+        if (modal) modal.classList.remove('hidden');
+
+        // Intentar abrir el checkout seguro en pestaña nueva de inmediato
+        const win = window.open(session.checkout_url, '_blank');
+        if (win) {
+          showToast('¡Pasarela abierta en portal seguro de Wompi!', '🚀');
+        } else {
+          showToast('Haga clic en el botón para continuar al pago.', 'ℹ️');
+        }
+      } catch (err) {
+        console.error('Error iniciando Wompi:', err);
+        showToast('Error al iniciar Wompi. Puede pagar mediante transferencia directa a Bancolombia.', '⚠️');
+      }
+    }
+
+    function submitWompiForm() {
+      const form = document.getElementById('wompiOfficialForm');
+      if (form) {
+        form.submit();
+      }
+    }
+
+    function closeWompiModal() {
+      const modal = document.getElementById('wompiModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openDirectWompiUrl() {
+      if (currentWompiSession && currentWompiSession.checkout_url) {
+        window.open(currentWompiSession.checkout_url, '_blank');
+      }
+      dismissWompiOverlay();
+    }
+
+    function dismissWompiOverlay() {
+      if (wompiWidgetTimer) {
+        clearTimeout(wompiWidgetTimer);
+        wompiWidgetTimer = null;
+      }
+      const helper = document.getElementById('wompiStuckHelper');
+      if (helper) helper.classList.add('hidden');
+
+      // Remover cualquier elemento iframe u overlay insertado por el widget.js de Wompi
+      document.querySelectorAll('iframe[src*="wompi"], div[class*="wompi"], div[id*="wompi"]').forEach(el => {
+        el.remove();
+      });
+      document.body.style.overflow = 'auto';
+    }
+
+    function tryWompiEmbeddedWidget() {
+      if (!currentWompiSession) return;
+      closeWompiModal();
+
+      if (typeof WidgetCheckout !== 'undefined') {
+        const helper = document.getElementById('wompiStuckHelper');
+        if (helper) helper.classList.remove('hidden');
+
+        // Temporizador de seguridad: Si pasan 3 segundos y el navegador bloqueó el iframe, resaltar asistencia
+        wompiWidgetTimer = setTimeout(() => {
+          if (helper) helper.classList.remove('hidden');
+        }, 3000);
+
+        try {
+          var checkout = new WidgetCheckout({
+            currency: 'COP',
+            amountInCents: currentWompiSession.amount_in_cents,
+            reference: currentWompiSession.reference,
+            publicKey: currentWompiSession.public_key || WOMPI_PUBLIC_KEY,
+            signature: { integrity: currentWompiSession.integrity_signature },
+            customerData: {
+              email: currentWompiSession.customer.email,
+              fullName: currentWompiSession.customer.full_name,
+              phoneNumber: currentWompiSession.customer.phone || '3101234567',
+              phoneNumberPrefix: '+57'
+            },
+            redirectUrl: window.location.origin + '/?pago_exitoso=true&ref=' + currentWompiSession.reference
+          });
+
+          checkout.open(function (result) {
+            dismissWompiOverlay();
+            var transaction = result.transaction;
+            if (transaction && transaction.status === 'APPROVED') {
+              showToast('¡Pago Aprobado en Wompi! Dispersión a Bancolombia.', '🎉');
+              alert(`¡PAGO APROBADO EXITOSAMENTE!\n\nTransacción: ${transaction.id}\nReferencia: ${currentWompiSession.reference}\nLos fondos fueron transferidos a la cuenta Bancolombia de Jonny Hidalgo.`);
+            }
+          });
+        } catch (e) {
+          console.warn('Widget checkout no pudo abrirse:', e);
+          openDirectWompiUrl();
+        }
+      } else {
+        openDirectWompiUrl();
+      }
+    }
+
+    // ==========================================
+    // 7. VISOR DE MINUTAS Y UTILIDADES
+    // ==========================================
+    function openDocModal(content, title) {
+      document.getElementById('modalDocTitle').innerText = title || 'Escrito Judicial Formal';
+      document.getElementById('modalDocContent').innerText = content;
+      document.getElementById('docModal').classList.remove('hidden');
+    }
+
+    function closeDocModal() {
+      document.getElementById('docModal').classList.add('hidden');
+    }
+
+    function copyModalDocContent() {
+      const content = document.getElementById('modalDocContent').innerText;
+      copyToClipboard(content, '¡Escrito judicial copiado al portapapeles!');
+    }
+
+    function printModalDocContent() {
+      window.print();
+    }
+
+    function copyToClipboard(text, msg) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(msg || 'Copiado al portapapeles', '📋');
+      }).catch(() => {
+        showToast('No se pudo copiar automáticamente', '⚠️');
+      });
+    }
+
+    function showToast(message, icon) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = message;
+      document.getElementById('toastIcon').innerText = icon || '✅';
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
+    }
+
+    // Comprobar si el usuario acaba de regresar de la pasarela Wompi tras pagar
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('pago_exitoso') || urlParams.get('id')) {
+        const ref = urlParams.get('ref') || urlParams.get('id') || 'PROCESADO';
+        showToast('¡Pago en Wompi completado exitosamente!', '🎉');
+        setTimeout(() => {
+          alert(`¡TRANSACCIÓN PROCESADA EXITOSAMENTE EN WOMPI!\n\nReferencia: ${ref}\nLos fondos fueron acreditados a través de la pasarela Wompi.\n\nAcceso completo y descarga de documentos desbloqueados.`);
+        }, 600);
+      }
+    });
+  </script>
+
+
+<script>
+// ============================================================
+// ACCESO, HISTORIAL Y UTILIDADES DEL PANEL
+// ============================================================
+let AUTH_USER = null;
+function getToken(){ return localStorage.getItem('cdl_token'); }
+function hideAuthGate(){ const g=document.getElementById('authGate'); if(g) g.classList.add('hidden'); }
+function setAuthMsg(t){ const m=document.getElementById('authMsg'); if(m){ m.classList.remove('hidden'); m.innerText=t; } }
+function hideAuthMsg(){ const m=document.getElementById('authMsg'); if(m){ m.classList.add('hidden'); m.innerText=''; } }
+function showAuth(msg){
+  AUTH_USER = null;
+  const g = document.getElementById('authGate');
+  if (g) g.classList.remove('hidden');
+  msg ? setAuthMsg(msg) : hideAuthMsg();
+}
+function authSetMode(mode){
+  document.getElementById('authMode').value = mode;
+  document.getElementById('authNameWrap').style.display = mode === 'registro' ? '' : 'none';
+  const b1 = document.getElementById('authBtn-registro'), b2 = document.getElementById('authBtn-ingreso');
+  if (mode === 'registro'){ b1.className='flex-1 text-sm font-bold px-3 py-2 rounded-lg bg-brand-900 text-white'; b2.className='flex-1 text-sm font-medium px-3 py-2 rounded-lg bg-slate-100 text-slate-700'; document.getElementById('authBtnLabel').innerText='Crear cuenta y entrar'; }
+  else { b2.className='flex-1 text-sm font-bold px-3 py-2 rounded-lg bg-brand-900 text-white'; b1.className='flex-1 text-sm font-medium px-3 py-2 rounded-lg bg-slate-100 text-slate-700'; document.getElementById('authBtnLabel').innerText='Ingresar'; }
+}
+function showConfirm(devLink){
+  const box = document.getElementById('authConfirm');
+  const link = document.getElementById('authDevLink');
+  if (box) box.classList.remove('hidden');
+  if (link){ if (devLink){ link.href = devLink; link.classList.remove('hidden'); } else link.classList.add('hidden'); }
+}
+function showAuthInfo(id){ const a=document.getElementById('authConfirm'), r=document.getElementById('authRecover'); if(a) a.classList.toggle('hidden', id!=='confirm'); if(r) r.classList.toggle('hidden', id!=='recover'); }
+async function confirmarToken(token){
+  hideAuthMsg();
+  try {
+    const resp = await fetch('/api/v1/auth/confirm-email', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({token: token}) });
+    const d = await resp.json();
+    if (resp.ok){ authSetMode('ingreso'); setAuthMsg('✅ ' + (d.message || 'Correo confirmado. Ya puedes ingresar.')); }
+    else setAuthMsg(d.detail || 'No se pudo confirmar el correo.');
+  } catch(e){ setAuthMsg('Error al confirmar: ' + e.message); }
+}
+async function reenviarConfirmacion(){
+  const email = document.getElementById('authEmail').value.trim();
+  const out = document.getElementById('authResendMsg');
+  if (!email){ if(out) out.innerText='Escribe tu correo primero.'; return; }
+  try {
+    const resp = await fetch('/api/v1/auth/resend-confirmation', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email: email}) });
+    const d = await resp.json();
+    if (d.dev_link){ const link=document.getElementById('authDevLink'); if(link){ link.href=d.dev_link; link.classList.remove('hidden'); } }
+    if (out) out.innerText = d.dev_link ? 'Reenviado (enlace de desarrollo arriba).' : 'Si el correo existe, fue reenviado.';
+  } catch(e){ if(out) out.innerText='Error: '+e.message; }
+}
+async function olvidoPassword(){
+  showAuthInfo('recover');
+  document.getElementById('authRecoverMsg').innerText = '';
+  const email = document.getElementById('authEmail').value.trim();
+  if (!email){ document.getElementById('authRecoverMsg').innerText='Escribe tu correo en el campo de arriba y vuelve a tocar este enlace.'; return; }
+  try {
+    const resp = await fetch('/api/v1/auth/forgot-password', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email: email}) });
+    const d = await resp.json();
+    const out = document.getElementById('authRecoverMsg');
+    if (d.dev_link){
+      const token = (d.dev_link.match(/token=([^&]+)/) || [])[1];
+      if (token) document.getElementById('resetToken').value = decodeURIComponent(token);
+      out.innerText = 'Enlace generado (modo desarrollo). Nueva contraseña abajo y pulsa restablecer.';
+    } else {
+      out.innerText = 'Si el correo existe, enviamos un enlace de restablecimiento (válido 1 hora).';
+    }
+  } catch(e){ document.getElementById('authRecoverMsg').innerText='Error: '+e.message; }
+}
+async function resetPassword(){
+  const token = document.getElementById('resetToken').value;
+  const pass = document.getElementById('resetPassword').value;
+  const out = document.getElementById('authRecoverMsg');
+  if (!token){ out.innerText='Falta el token (no llegó el enlace de desarrollo).'; return; }
+  try {
+    const resp = await fetch('/api/v1/auth/reset-password', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({token: token, new_password: pass}) });
+    const d = await resp.json();
+    if (resp.ok){ out.innerText = '✅ ' + (d.message || 'Contraseña actualizada.'); showAuthInfo(null); authSetMode('ingreso'); }
+    else out.innerText = d.detail || 'No se pudo restablecer.';
+  } catch(e){ out.innerText='Error: '+e.message; }
+}
+async function authSubmit(){
+  const mode = document.getElementById('authMode').value;
+  const name = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPassword').value;
+  if (!email || !pass || (mode==='registro' && !name)){ setAuthMsg('Completa nombre, correo y contraseña.'); return; }
+  hideAuthMsg();
+  try {
+    const resp = await fetch(mode==='registro' ? '/api/v1/auth/register' : '/api/v1/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(mode==='registro' ? {email:email,password:pass,full_name:name} : {email:email,password:pass})
+    });
+    const data = await resp.json();
+    if (mode === 'registro'){
+      if (resp.ok){ showConfirm(data.dev_link || null); setAuthMsg(data.message || 'Cuenta creada. Confirma tu correo.'); }
+      else setAuthMsg(data.detail || 'No fue posible registrar.');
+      return;
+    }
+    if (!resp.ok){
+      if (resp.status === 403 && (data.detail||'').toLowerCase().indexOf('confirm') >= 0){ showConfirm(null); setAuthMsg(data.detail); }
+      else setAuthMsg(data.detail || 'Credenciales inválidas.');
+      return;
+    }
+    localStorage.setItem('cdl_token', data.access_token);
+    hideAuthGate();
+    await loadMyAccount();
+    showToast('✅ Sesión iniciada', '⚖️');
+    switchMainTab('rama');
+  } catch(e){ setAuthMsg('Error de conexión: '+e.message); }
+}
+async function authFetch(url, opts){
+  opts = opts || {};
+  const headers = Object.assign({'Content-Type':'application/json'}, opts.headers || {});
+  const t = getToken(); if (t) headers['Authorization'] = 'Bearer ' + t;
+  const resp = await fetch(url, Object.assign({}, opts, {headers:headers}));
+  if (resp.status === 401){ showAuth('Tu sesión expiró. Ingresa de nuevo.'); throw new Error('noauth'); }
+  return resp;
+}
+async function logHistory(kind, title, detail, meta){
+  try { await authFetch('/api/v1/history/', { method:'POST', body: JSON.stringify({kind:kind,title:title,detail:detail||null,meta:meta||{}}) }); } catch(e){}
+}
+const HISTORY_KINDS = {proceso:'📁 Proceso', alerta:'⚠️ Alerta', sugerencia:'💡 Sugerencia', documento:'📄 Documento', recordatorio:'⏰ Recordatorio', asistencia:'🤝 Asistencia', pago:'💳 Pago'};
+function renderHistory(lista){
+  const cont = document.getElementById('historyList');
+  if (!cont) return;
+  if (!lista || !lista.length){ cont.innerHTML = '<p class="text-sm text-slate-500">Todavía no hay registros. A medida que uses los servicios (consulta CPNU, diagnóstico, minutas, pagos), aquí reposará tu historial.</p>'; return; }
+  cont.innerHTML = lista.map(function(h){
+    return '<div class="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3">' +
+      '<span class="text-lg">' + (HISTORY_KINDS[h.kind] || '•') + '</span>' +
+      '<div class="min-w-0"><p class="text-sm font-semibold text-slate-800">' + (h.title||'') + '</p>' +
+      (h.detail ? '<p class="text-xs text-slate-500">' + h.detail + '</p>' : '') +
+      '<p class="text-[10px] text-slate-400 mt-0.5">' + new Date(h.created_at).toLocaleString('es-CO') + '</p></div></div>';
+  }).join('');
+}
+async function loadMyAccount(){
+  try {
+    const [me, hist, dash] = await Promise.all([
+      authFetch('/api/v1/auth/me').then(function(r){ return r.json(); }),
+      authFetch('/api/v1/history/').then(function(r){ return r.json(); }),
+      authFetch('/api/v1/dashboard/').then(function(r){ return r.json(); })
+    ]);
+    AUTH_USER = me;
+    document.getElementById('acctName').innerText = me.full_name;
+    document.getElementById('acctEmail').innerText = me.email;
+    renderHistory(hist);
+    renderDash(dash);
+    const btn = document.getElementById('navBtn-account');
+    if (btn) btn.classList.remove('hidden');
+    if (me.role === 'admin') loadCoop();
+  } catch(e){}
+}
+function renderDash(d){
+  const cont = document.getElementById('dashStats');
+  if (!cont || !d) return;
+  const items = [
+    {k: d.minutas_generadas || 0, l: 'Minutas generadas'},
+    {k: d.procesos_consultados || 0, l: 'Casos / consultas CPNU'},
+    {k: d.procesos_seguimiento || 0, l: 'Procesos en seguimiento'},
+    {k: d.pagos || 0, l: 'Pagos realizados'}
+  ];
+  cont.innerHTML = items.map(function(i){ return '<div class="mini-card"><div class="kpi">' + i.k + '</div><div class="lbl">' + i.l + '</div></div>'; }).join('');
+}
+async function loadCoop(){
+  try {
+    const r = await authFetch('/api/v1/lawyers/collab/leaderboard');
+    const lista = await r.json();
+    const panel = document.getElementById('coopPanel');
+    const cont = document.getElementById('coopList');
+    if (!panel || !cont) return;
+    panel.classList.remove('hidden');
+    cont.innerHTML = lista.map(function(x){
+      return '<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-2.5">' +
+        '<div class="min-w-0"><p class="text-sm font-semibold text-slate-800">' + x.nombre + ' <span class="text-[10px] text-slate-400 font-mono">' + x.tarjeta + '</span></p>' +
+        '<p class="text-[11px] text-slate-500">Especialidades: ' + (x.especialidades || []).join(', ') + ' · Casos: ' + x.casos_asignados + ' · Resueltos: ' + x.casos_resueltos + '</p></div>' +
+        '<div class="flex items-center gap-2 text-xs"><span class="rounded-full bg-slate-100 px-2.5 py-1 font-semibold">Score ' + x.score + '</span>' +
+        '<span class="text-slate-500">⭐ ' + x.valoracion + ' · ⚡ ' + x.eficiencia + '</span>' +
+        '<button onclick="rateLawyer(' + x.id + ', 5)" class="bg-amber-400 text-slate-950 text-[11px] font-bold px-2 py-1 rounded">★ 5</button>' +
+        '<button onclick="rateLawyer(' + x.id + ', 4)" class="bg-slate-200 text-slate-800 text-[11px] font-bold px-2 py-1 rounded">★ 4</button></div></div>';
+    }).join('');
+  } catch(e){}
+}
+async function rateLawyer(id, val){
+  try {
+    const r = await authFetch('/api/v1/lawyers/collab/rate/' + id, { method:'POST', body: JSON.stringify({rating: val}) });
+    const d = await r.json();
+    showToast('Valoración registrada: promedio ' + d.promedio + ' (' + d.valoraciones + ' valoraciones)', '⭐');
+    loadCoop();
+  } catch(e){ showToast('No se pudo valorar.', '⚠️'); }
+}
+async function assignCoop(){
+  const branch = document.getElementById('coopBranch').value;
+  const out = document.getElementById('coopResult');
+  try {
+    const r = await authFetch('/api/v1/lawyers/collab/assign-case', { method:'POST', body: JSON.stringify({branch: branch}) });
+    const d = await r.json();
+    out.innerText = '✔ Asignado: ' + d.asignado.nombre + ' (score ' + d.asignado.score + ') — especialidad ' + d.asignado.desglose.especialidad_match + ', carga ' + d.asignado.desglose.carga + ', valoración ' + d.asignado.desglose.valoracion + ', eficiencia ' + d.asignado.desglose.eficiencia;
+    logHistory('sugerencia', 'Caso asignado a abogado cooperativo: ' + d.asignado.nombre, 'Rama: ' + branch);
+    loadCoop();
+  } catch(e){ out.innerText = 'No se pudo asignar: ' + e.message; }
+}
+function leerCampos(tipo){
+  const map = {
+    'poder-especial': ['otorgante','otorgante_cc','otorgante_direccion','apoderado','apoderado_cc','apoderado_tarjeta','asunto'],
+    'promesa-compraventa': ['vendedor','vendedor_cc','comprador','comprador_cc','inmueble_direccion','inmueble_matricula','precio','forma_pago','plazo_meses','arras'],
+    'contrato-obra': ['contratante','contratante_cc','contratista','contratista_cc','obra_descripcion','obra_ubicacion','valor','plazo_meses','anticipo_pct'],
+    'contrato-comodato': ['comodante','comodante_cc','comodatario','comodatario_cc','bien_descripcion','uso_permitido','plazo_meses'],
+    'acuerdo-confidencialidad': ['revelador','revelador_cc','receptor','receptor_cc','objeto','duracion_anios'],
+    'divorcio-mutuo-acuerdo': ['conyuge1','conyuge1_cc','conyuge2','conyuge2_cc','matrimonio_fecha','matrimonio_notaria','hijos','sociedad_conyugal','acuerdo_visitas'],
+    'leasing': ['arrendador','arrendador_cc','arrendatario','arrendatario_cc','bien_descripcion','canon_mensual','plazo_meses','valor_opcion_compra'],
+    'factoring': ['cedente','cedente_cc','factor','factor_cc','cartera_descripcion','valor_cartera','anticipo_pct','descuento_pct'],
+    'franquicia': ['franquiciante','franquiciante_cc','franquiciado','franquiciado_cc','marca','canon_inicial','regalias_pct','plazo_anios','territorio'],
+    'outsourcing': ['contratante','contratante_cc','proveedor','proveedor_cc','servicios','sede','valor_mensual','plazo_meses'],
+    'joint-venture': ['parte1','parte1_cc','parte2','parte2_cc','proyecto','aporte1_pct','duracion_meses']
+  };
+  const body = {};
+  (map[tipo] || []).forEach(function(k){
+    const el = document.getElementById('x_' + tipo + '_' + k);
+    body[k] = el ? el.value : '';
+    if (['precio','valor','arras'].indexOf(k) >= 0 && body[k] === '') body[k] = 0;
+  });
+  return body;
+}
+function toggleMinuta(tipo){
+  document.querySelectorAll('.minuta-acc').forEach(function(a){
+    const body = a.querySelector('.minuta-body');
+    const open = a.dataset.tipo === tipo;
+    if (body) body.classList.toggle('hidden', !open);
+    a.classList.toggle('minuta-open', open);
+  });
+}
+function setMinutaPending(ref, tipo){
+  const box = document.getElementById('minutaPending');
+  const refEl = document.getElementById('minutaPendingRef');
+  if (!box) return;
+  if (ref){ if (refEl) refEl.innerText = ref; box.classList.remove('hidden'); }
+  else box.classList.add('hidden');
+}
+async function pagarGenerar(tipo){
+  if (!getToken()){ showAuth('Para generar minutas debes crear tu cuenta o ingresar.'); return; }
+  const campos = leerCampos(tipo);
+  const email = (AUTH_USER && AUTH_USER.email) || '';
+  const nombre = (AUTH_USER && AUTH_USER.full_name) || 'Cliente';
+  try {
+    const r = await authFetch('/api/v1/payments/create-checkout', { method:'POST', body: JSON.stringify({ service_id:'minuta_generica', customer_email: email || 'cliente@consultoriolegal.co', customer_name: nombre }) });
+    const s = await r.json();
+    if (!s.checkout_url) { showToast('No se pudo crear el pago: ' + (s.detail || s.mensaje || 'verifica Wompi'), '⚠️'); return; }
+    if (s.descuento_edu_co) showToast('🎓 Descuento académico 10% — pagas $' + Number(s.amount_in_cop).toLocaleString('es-CO') + ' COP', '🎓');
+    window.localStorage.setItem('cdl_minuta_pending', JSON.stringify({ reference: s.reference, tipo: tipo, campos: campos }));
+    setMinutaPending(s.reference, tipo);
+    showToast('Abriendo Wompi para pagar $' + Number(s.amount_in_cop).toLocaleString('es-CO') + ' COP…', '💳');
+    window.open(s.checkout_url, '_blank');
+  } catch(e){ showToast('No se pudo iniciar el pago: ' + e.message, '⚠️'); }
+}
+async function verificarPagarMinuta(){
+  const raw = window.localStorage.getItem('cdl_minuta_pending');
+  if (!raw){ showToast('No hay pago de minuta pendiente.', '⚠️'); return; }
+  const p = JSON.parse(raw);
+  showToast('Verificando pago en Wompi…', '⏳');
+  try {
+    const r = await authFetch('/api/v1/payments/confirm-minuta', { method:'POST', body: JSON.stringify({ reference: p.reference, tipo: p.tipo, campos: p.campos }) });
+    const d = await r.json();
+    if (d.approved){
+      window.localStorage.removeItem('cdl_minuta_pending');
+      setMinutaPending(null, null);
+      openDocModal(d.content, d.title || 'Minuta');
+      showToast('✅ Minuta generada. Pago verificado.', '📄');
+      loadMyAccount();
+    } else {
+      showToast('Pago aún no aprobado (' + (d.detail || 'reintenta') + ')', '⏳');
+    }
+  } catch(e){ showToast('Pago aún no aprobado. Espera unos segundos y vuelve a verificar.', '⏳'); }
+}
+async function genMinuta(tipo){
+  const map = {
+    'poder-especial': ['otorgante','otorgante_cc','otorgante_direccion','apoderado','apoderado_cc','apoderado_tarjeta','asunto'],
+    'promesa-compraventa': ['vendedor','vendedor_cc','comprador','comprador_cc','inmueble_direccion','inmueble_matricula','precio','forma_pago','plazo_meses','arras'],
+    'contrato-obra': ['contratante','contratante_cc','contratista','contratista_cc','obra_descripcion','obra_ubicacion','valor','plazo_meses','anticipo_pct'],
+    'contrato-comodato': ['comodante','comodante_cc','comodatario','comodatario_cc','bien_descripcion','uso_permitido','plazo_meses'],
+    'acuerdo-confidencialidad': ['revelador','revelador_cc','receptor','receptor_cc','objeto','duracion_anios'],
+    'divorcio-mutuo-acuerdo': ['conyuge1','conyuge1_cc','conyuge2','conyuge2_cc','matrimonio_fecha','matrimonio_notaria','hijos','sociedad_conyugal','acuerdo_visitas'],
+    'leasing': ['arrendador','arrendador_cc','arrendatario','arrendatario_cc','bien_descripcion','canon_mensual','plazo_meses','valor_opcion_compra'],
+    'factoring': ['cedente','cedente_cc','factor','factor_cc','cartera_descripcion','valor_cartera','anticipo_pct','descuento_pct'],
+    'franquicia': ['franquiciante','franquiciante_cc','franquiciado','franquiciado_cc','marca','canon_inicial','regalias_pct','plazo_anios','territorio'],
+    'outsourcing': ['contratante','contratante_cc','proveedor','proveedor_cc','servicios','sede','valor_mensual','plazo_meses'],
+    'joint-venture': ['parte1','parte1_cc','parte2','parte2_cc','proyecto','aporte1_pct','duracion_meses']
+  };
+  const body = {};
+  (map[tipo] || []).forEach(function(k){
+    const el = document.getElementById('x_' + tipo + '_' + k);
+    body[k] = el ? el.value : '';
+    if (['precio','valor','arras'].indexOf(k) >= 0 && body[k] === '') body[k] = 0;
+  });
+  try {
+    const r = await authFetch('/api/v1/documents/' + tipo, { method:'POST', body: JSON.stringify(body) });
+    const d = await r.json();
+    logHistory('documento', 'Minuta generada: ' + (d.title || tipo), '');
+    openDocModal(d.content, d.title || 'Minuta');
+    showToast('Minuta generada: ' + (d.title || tipo), '📄');
+  } catch(e){ showToast('No se pudo generar la minuta: ' + e.message, '⚠️'); }
+}
+async function addRecordatorio(){
+  const t = document.getElementById('recTitle').value.trim();
+  const f = document.getElementById('recDate').value;
+  if (!t){ showToast('Escribe el recordatorio.', '⚠️'); return; }
+  await logHistory('recordatorio', t, f ? ('Fecha programada: ' + f) : '');
+  document.getElementById('recTitle').value=''; document.getElementById('recDate').value='';
+  showToast('Recordatorio guardado en tu historial.', '⏰');
+  loadMyAccount();
+}
+async function solicitarAsistencia(){
+  await logHistory('asistencia', 'Solicitud de asistencia', 'Usuario solicitó acompañamiento desde el panel.');
+  showToast('Solicitud de asistencia registrada. Te contactaremos.', '🤝');
+}
+// Inicialización: si hay sesión, entra directo; si no, muestra la puerta.
+(function(){
+  authSetMode('registro');
+  if (getToken()){ hideAuthGate(); loadMyAccount(); } else { showAuth(''); }
+  try {
+    const raw = window.localStorage.getItem('cdl_minuta_pending');
+    if (raw){ const p = JSON.parse(raw); setMinutaPending(p.reference, p.tipo); }
+  } catch(e){}
+  // Enlaces de correo: #confirmar?token=… y #recuperar?token=…
+  try {
+    const h = window.location.hash || '';
+    const token = (h.match(/token=([^&]+)/) || [])[1];
+    if (token && h.indexOf('confirmar') >= 0) confirmarToken(decodeURIComponent(token));
+    else if (token && h.indexOf('recuperar') >= 0) { olvidoPassword(); document.getElementById('resetToken').value = decodeURIComponent(token); }
+  } catch(e){}
+})();
+</script>
+
+</body>
+</html>

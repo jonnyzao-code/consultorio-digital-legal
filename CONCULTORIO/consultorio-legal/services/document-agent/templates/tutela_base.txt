@@ -1,0 +1,89 @@
+================================================================================
+ACCIÓN DE TUTELA
+================================================================================
+(Art. 86 de la Constitución Política de Colombia y Decreto 2591 de 1991)
+
+Señor(a) Juez [NOMBRE_JUZGADO]
+[CIUDAD], [FECHA]
+
+Yo, [NOMBRE_ACCIONANTE], identificado(a) con cédula de ciudadanía No. [CEDULA],
+domiciliado(a) en [DIRECCION], [CIUDAD], respetuosamente presento ACCIÓN DE
+TUTELA en contra de [ENTIDAD_ACCIONADA], con fundamento en los siguientes:
+
+================================================================================
+I. HECHOS
+================================================================================
+
+1. [HECHO_1]
+2. [HECHO_2]
+...
+
+================================================================================
+II. DERECHO FUNDAMENTAL VULNERADO
+================================================================================
+
+[DERECHO_VULNERADO] consagrado en el artículo [ART_CP] de la Constitución
+Política de Colombia de 1991.
+
+================================================================================
+III. PRETENSIONES
+================================================================================
+
+1. [PRETENSION_1]
+2. [PRETENSION_2]
+...
+
+================================================================================
+IV. FUNDAMENTOS DE DERECHO
+================================================================================
+
+- Artículo 86 de la Constitución Política: "Toda persona tendrá acción de
+  tutela para reclamar ante los jueces, en todo momento y lugar, mediante un
+  procedimiento preferente y sumario, por sí misma o por quien actúe en su
+  nombre, la protección inmediata de sus derechos constitucionales
+  fundamentales..."
+
+- Decreto 2591 de 1991: Reglamenta la acción de tutela consagrada en el
+  artículo 86 de la Constitución Política.
+
+- [JURISPRUDENCIA_RELEVANTE]: Corte Constitucional, Sentencia [REF].
+
+================================================================================
+V. PRUEBAS
+================================================================================
+
+1. Copia de la cédula de ciudadanía del accionante.
+2. [PRUEBA_2]
+3. [PRUEBA_3]
+
+================================================================================
+VI. COMPETENCIA
+================================================================================
+
+Es competente el Despacho judicial de [CIUDAD], conforme al Decreto 2591/1991.
+
+================================================================================
+VII. NOTIFICACIONES
+================================================================================
+
+Accionante: [NOMBRE_ACCIONANTE]
+Dirección: [DIRECCION]
+Teléfono: [TELEFONO]
+Correo: [EMAIL]
+
+Accionado: [ENTIDAD_ACCIONADA]
+Dirección de notificación judicial: [DIRECCION_ACCIONADO]
+
+================================================================================
+VIII. JURAMENTO
+================================================================================
+
+Manifiesto bajo la gravedad del juramento que no he presentado otra tutela por
+los mismos hechos y derechos aquí reclamados.
+
+Atentamente,
+
+_________________________
+[NOMBRE_ACCIONANTE]
+C.C. No. [CEDULA]
+[CIUDAD], [FECHA]
