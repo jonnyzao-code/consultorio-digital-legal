@@ -1,0 +1,46 @@
+# Render Blueprint — Consultorio Digital Legal (portal base)
+# Deploy: render.com -> New -> Blueprint -> connecta este repo -> Deploy
+databases:
+  - name: consultorio-db
+    databaseName: consultorio_legal
+    user: consultorio
+    plan: free
+
+services:
+  - type: web
+    name: consultorio-digital-legal
+    runtime: python
+    rootDir: CONCULTORIO/apps/api
+    plan: free
+    buildCommand: pip install -r requirements-deploy.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: API_SECRET_KEY
+        generateValue: true          # secreto fuerte auto-generado para firmar JWT
+      - key: DATABASE_URL
+        fromDatabase:
+          name: consultorio-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false                  # pégala en el dashboard de Render
+      - key: NEXT_PUBLIC_WOMPI_PUBLIC_KEY
+        sync: false
+      - key: WOMPI_PRIVATE_KEY
+        sync: false
+      - key: WOMPI_INTEGRITY_SECRET
+        sync: false
+      - key: WOMPI_EVENTS_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false

@@ -15,6 +15,9 @@ engine = None
 AsyncSessionLocal = None
 
 db_url = settings.DATABASE_URL
+# Render/Neon entregan "postgresql://..."; el driver async requiere "postgresql+asyncpg://".
+if db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
 # Intentar inicializar asyncpg o SQLite de forma segura
 try:
