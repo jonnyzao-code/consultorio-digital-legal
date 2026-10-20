@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import type { Triage } from "@/lib/triage";
+import { pagarConcepto } from "@/app/pagos/actions";
 
 const nombreArea = (id: string) => AREAS.find((a) => a.id === id)?.nombre ?? id;
 const colorUrgencia = { alta: "bg-red-100 text-red-800", media: "bg-amber-100 text-amber-800", baja: "bg-green-100 text-green-800" };
@@ -84,8 +85,11 @@ export default function Orientacion() {
             </div>
           )}
           <div className="rounded-md bg-slate-100 p-4 text-sm">
-            <p className="font-semibold">Concepto preliminar firmado por abogado: $39.900</p>
-            <p>Incluye revisión de tu caso y tres abogados sugeridos del área. (Pago disponible próximamente.)</p>
+            <p className="font-semibold">Concepto preliminar firmado por abogado: $39.900 + IVA</p>
+            <p>Incluye revisión de tu caso y tres abogados sugeridos del área. Pagas con PSE, Nequi o tarjeta.</p>
+            <form action={pagarConcepto.bind(null, resultado)} className="mt-3">
+              <button className="rounded-md bg-blue-900 px-4 py-2 text-white">Solicitar concepto</button>
+            </form>
           </div>
         </section>
       )}

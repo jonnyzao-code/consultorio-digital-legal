@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AREAS } from "@/lib/areas";
 import { supabaseServer } from "@/lib/supabase/server";
 import { crearCaso } from "./actions";
+import { pagarSuscripcion } from "@/app/pagos/actions";
 
 const campo = "rounded-md border bg-white p-2";
 
@@ -47,6 +48,10 @@ export default async function Panel() {
   }
 
   const { data: casos } = await supabase.from("casos").select("id, titulo, area, radicado, estado").order("abierto_en", { ascending: false });
+  const hoy = new Date().toISOString().slice(0, 10);
+  const { data: vigencia } = perfil.rol === "abogado"
+    ? await supabase.from("suscripciones").select("plan, vigente_hasta").order("vigente_hasta", { ascending: false }).limit(1).maybeSingle()
+    : { data: null };
   const limite = new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10);
   const { data: proximos } = perfil.rol === "abogado"
     ? await supabase.from("terminos").select("id, descripcion, vence, urgente, caso_id").eq("cumplido", false).lte("vence", limite).order("vence")
@@ -58,6 +63,30 @@ export default async function Panel() {
         <h1 className="text-2xl font-bold text-blue-900">Hola, {perfil.nombre}</h1>
         <p className="text-sm text-slate-500">Tu código de referido: <span className="font-mono">{perfil.codigo_referido}</span></p>
       </div>
+
+      {perfil.rol === "abogado" && (
+        <section className="rounded-lg border bg-white p-4">
+          <h2 className="mb-1 font-semibold">Suscripción</h2>
+          <p className="mb-3 text-sm text-slate-600">
+            {vigencia?.vigente_hasta && vigencia.vigente_hasta >= hoy
+              ? `Plan ${vigencia.plan} vigente hasta ${vigencia.vigente_hasta}.`
+              : "No tienes una suscripción vigente; tu perfil no aparece a los clientes."}
+          </p>
+          <form action={pagarSuscripcion} className="flex flex-wrap gap-2 text-sm">
+            <select name="plan" defaultValue={vigencia?.plan ?? "profesional"} className={campo}>
+              <option value="basico">Básico · $49.900/mes</option>
+              <option value="profesional">Profesional · $99.900/mes</option>
+              <option value="firma">Firma · $249.900/mes</option>
+            </select>
+            <select name="periodicidad" className={campo}>
+              <option value="mensual">Mensual</option>
+              <option value="anual">Anual (2 meses gratis)</option>
+            </select>
+            <button className="rounded-md bg-blue-900 px-4 py-2 text-white">Pagar con Wompi</button>
+          </form>
+          <p className="mt-2 text-xs text-slate-500">Precios más IVA.</p>
+        </section>
+      )}
 
       {perfil.rol === "abogado" && (
         <section>
