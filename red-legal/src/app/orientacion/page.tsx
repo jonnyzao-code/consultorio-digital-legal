@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
-import type { Triage } from "@/lib/triage";
+import type { Orientacion } from "@/lib/triage";
 import { pagarConcepto } from "@/app/pagos/actions";
 
 const nombreArea = (id: string) => AREAS.find((a) => a.id === id)?.nombre ?? id;
@@ -13,7 +13,7 @@ export default function Orientacion() {
   const [autoriza, setAutoriza] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
-  const [resultado, setResultado] = useState<Triage | null>(null);
+  const [resultado, setResultado] = useState<Orientacion | null>(null);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -64,6 +64,12 @@ export default function Orientacion() {
 
       {resultado && (
         <section className="space-y-4 rounded-lg border bg-white p-5">
+          {resultado.origen === "basica" && (
+            <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+              La orientación con inteligencia artificial no está disponible en este momento. Esta es una clasificación
+              básica según las palabras de tu consulta; un abogado revisará los detalles.
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-2">
             {resultado.areas.map((a) => (
               <span key={a} className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-900">{nombreArea(a)}</span>

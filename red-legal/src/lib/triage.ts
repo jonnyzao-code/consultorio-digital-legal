@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { AREAS, AREA_IDS } from "./areas";
+import { orientarBasico } from "./triage-basico";
 
 export const TriageSchema = z.object({
   areas: z.array(z.enum(AREA_IDS)).min(1).max(3),
@@ -12,6 +13,8 @@ export const TriageSchema = z.object({
   requiere_abogado: z.boolean(),
 });
 export type Triage = z.infer<typeof TriageSchema>;
+// Indica si la orientación vino de la IA o de la clasificación básica por palabras clave.
+export type Orientacion = Triage & { origen: "ia" | "basica" };
 
 export type Mensaje = { role: "user" | "assistant"; content: string };
 
@@ -44,9 +47,23 @@ const tool: Anthropic.Tool = {
   },
 };
 
-export async function orientar(mensajes: Mensaje[]): Promise<Triage> {
-  // Gemini tiene plan gratuito; si hay clave de Gemini se usa, si no, Claude.
-  return process.env.GEMINI_API_KEY ? orientarConGemini(mensajes) : orientarConClaude(mensajes);
+export async function orientar(mensajes: Mensaje[]): Promise<Orientacion> {
+  // Orden: Gemini (plan gratuito) si hay clave, luego Claude; si ninguna IA responde, clasificación básica gratuita.
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      return { ...(await orientarConGemini(mensajes)), origen: "ia" };
+    } catch (e) {
+      console.error("Gemini no disponible:", e);
+    }
+  }
+  if (process.env.ANTHROPIC_API_KEY) {
+    try {
+      return { ...(await orientarConClaude(mensajes)), origen: "ia" };
+    } catch (e) {
+      console.error("Claude no disponible:", e);
+    }
+  }
+  return { ...orientarBasico(mensajes), origen: "basica" };
 }
 
 async function orientarConClaude(mensajes: Mensaje[]): Promise<Triage> {
