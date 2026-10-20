@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Red Legal DOMINET
 
-## Getting Started
+Plataforma web que conecta clientes con abogados inscritos en Colombia: orientación preliminar con IA, concepto firmado por abogado, gestión de casos con términos y alertas, suscripciones de abogados y referidos de un solo nivel.
 
-First, run the development server:
+Producto separado del consultorio jurídico académico (Q10) de dominetsas.com.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Estado (fase 1, en construcción)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Pieza | Estado |
+| --- | --- |
+| Inicio público y áreas del derecho | Hecho |
+| Orientación con IA (`/orientacion`, `POST /api/orientacion`) | Hecho |
+| Solicitud de vinculación de abogados (`/abogados/registro`) | Hecho |
+| Esquema de base de datos con seguridad por fila (`supabase/migrations`) | Hecho |
+| Cálculo de términos en días hábiles con festivos y vacancia judicial (`src/lib/terminos.ts`) | Hecho |
+| Inicio de sesión, tablero del abogado, expediente | Pendiente |
+| Pagos (Wompi o PayU) y factura electrónica | Pendiente |
+| Correos de alerta y límite diario de la orientación gratuita | Pendiente |
+| Panel del administrador | Pendiente (la vista `metricas_abogados` ya existe) |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cómo correrlo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Crea un proyecto en Supabase y ejecuta `supabase/migrations/0001_esquema_inicial.sql` en el editor SQL.
+2. Copia `.env.example` a `.env.local` y llena las claves de Supabase y Anthropic.
+3. `npm install` y `npm run dev`; abre http://localhost:3000.
 
-## Learn More
+Para desplegar, conecta el repositorio a Vercel y carga las mismas variables de entorno.
 
-To learn more about Next.js, take a look at the following resources:
+## Notas legales para el equipo
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- La orientación de la IA es informativa; el concepto pagado lo firma un abogado.
+- El administrador ve métricas agregadas, no el contenido de los expedientes.
+- La plataforma no cobra porcentaje de honorarios ni paga comisiones por clientes.
+- Los festivos y la vacancia judicial deben revisarse cada año contra el calendario oficial.
