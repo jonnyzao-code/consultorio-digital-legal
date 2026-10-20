@@ -45,6 +45,11 @@ const tool: Anthropic.Tool = {
 };
 
 export async function orientar(mensajes: Mensaje[]): Promise<Triage> {
+  // Gemini tiene plan gratuito; si hay clave de Gemini se usa, si no, Claude.
+  return process.env.GEMINI_API_KEY ? orientarConGemini(mensajes) : orientarConClaude(mensajes);
+}
+
+async function orientarConClaude(mensajes: Mensaje[]): Promise<Triage> {
   const client = new Anthropic();
   const res = await client.messages.create({
     model: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5-5",
@@ -57,4 +62,40 @@ export async function orientar(mensajes: Mensaje[]): Promise<Triage> {
   const block = res.content.find((b) => b.type === "tool_use");
   if (!block || block.type !== "tool_use") throw new Error("La IA no devolvió una orientación");
   return TriageSchema.parse(block.input);
+}
+
+const texto = { type: "STRING" };
+const lista = (max: number, items: object = texto) => ({ type: "ARRAY", items, maxItems: max });
+
+async function orientarConGemini(mensajes: Mensaje[]): Promise<Triage> {
+  const modelo = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYSTEM.replace("Usa siempre la herramienta registrar_orientacion.", "Responde solo con el JSON pedido.") }] },
+      contents: mensajes.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            areas: { ...lista(3, { type: "STRING", enum: AREA_IDS }), minItems: 1 },
+            urgencia: { type: "STRING", enum: ["alta", "media", "baja"] },
+            motivo_urgencia: texto,
+            resumen: texto,
+            preguntas_pendientes: lista(5),
+            orientacion_general: lista(6),
+            requiere_abogado: { type: "BOOLEAN" },
+          },
+          required: ["areas", "urgencia", "motivo_urgencia", "resumen", "preguntas_pendientes", "orientacion_general", "requiere_abogado"],
+        },
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`Gemini respondió ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const data = await res.json();
+  const salida = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!salida) throw new Error("La IA no devolvió una orientación");
+  return TriageSchema.parse(JSON.parse(salida));
 }
