@@ -22,6 +22,7 @@ export default function RootLayout({
             <div className="flex gap-4 text-sm">
               <Link href="/orientacion">Tengo un problema legal</Link>
               <Link href="/abogados/registro">Soy abogado</Link>
+              <Link href="/panel">Mi panel</Link>
             </div>
           </nav>
         </header>
