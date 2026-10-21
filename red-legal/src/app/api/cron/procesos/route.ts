@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { enviarCorreo } from "@/lib/correo";
 import { autorizado } from "@/lib/cron";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sincronizarCaso } from "@/lib/vigilancia";
 
 // Revisa en la Rama Judicial los procesos vigilados que no se han consultado en las últimas 20 horas.
-// Trabaja por lotes pequeños (Cloudflare limita las conexiones por solicitud): el NUC lo llama cada 15 minutos.
+// Trabaja por lotes pequeños (Cloudflare limita las conexiones por solicitud): el Worker lo llama cada 15 minutos.
 export async function GET(req: Request) {
   if (!autorizado(req)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -31,17 +32,12 @@ export async function GET(req: Request) {
     const { data: usuario } = await db.auth.admin.getUserById(caso.abogado_id);
     if (!usuario.user?.email) continue;
     const lista = nuevas.map((a) => `- ${a.fecha}: ${a.actuacion}${a.anotacion ? ` (${a.anotacion})` : ""}${a.termina ? ` · término hasta ${a.termina}` : ""}`).join("\n");
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: process.env.ALERTAS_REMITENTE ?? "Red Legal DOMINET <alertas@dominetsas.com>",
-        to: usuario.user.email,
-        subject: `Nueva actuación: ${caso.titulo} (${caso.radicado})`,
-        text: `El proceso ${caso.radicado} tiene ${nuevas.length} actuación(es) nueva(s) en la Rama Judicial:\n\n${lista}\n\nRevísalas en tu panel.`,
-      }),
+    const ok = await enviarCorreo({
+      para: usuario.user.email,
+      asunto: `Nueva actuación: ${caso.titulo} (${caso.radicado})`,
+      texto: `El proceso ${caso.radicado} tiene ${nuevas.length} actuación(es) nueva(s) en la Rama Judicial:\n\n${lista}\n\nRevísalas en tu panel.`,
     });
-    if (res.ok) avisos++;
+    if (ok) avisos++;
   }
   return NextResponse.json({ revisados: casos?.length ?? 0, avisos });
 }

@@ -1,13 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "red-legal",
-  "main": ".open-next/worker.js",
+  "main": "custom-worker.ts",
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   // Dominio propio (Cloudflare crea el DNS y el certificado). Se mantiene también workers.dev.
   "routes": [{ "pattern": "abogados.dominetsas.com", "custom_domain": true }],
   "workers_dev": true,
+  // Vigilancia de procesos cada 15 minutos y alertas de términos a diario (ver custom-worker.ts).
+  "triggers": { "crons": ["*/15 * * * *", "0 12 * * *"] },
   // No borrar en cada publicación las variables puestas a mano en el panel.
   "keep_vars": true,
   // Valores no secretos. Las claves (SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY, etc.)

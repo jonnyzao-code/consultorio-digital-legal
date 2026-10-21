@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { enviarCorreo } from "@/lib/correo";
 import { autorizado } from "@/lib/cron";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { venceTermino } from "@/lib/terminos";
@@ -27,17 +28,12 @@ export async function GET(req: Request) {
     const email = usuario.user?.email;
     if (!email) continue;
     const vencido = t.vence < hoy;
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: process.env.ALERTAS_REMITENTE ?? "Red Legal DOMINET <alertas@dominetsas.com>",
-        to: email,
-        subject: `${vencido ? "VENCIDO" : t.urgente ? "URGENTE" : "Recordatorio"}: ${t.descripcion} (${t.vence})`,
-        text: `Caso: ${caso.titulo}\nTérmino: ${t.descripcion}\nVence: ${t.vence}\n\nIngresa a tu panel para gestionarlo.`,
-      }),
+    const ok = await enviarCorreo({
+      para: email,
+      asunto: `${vencido ? "VENCIDO" : t.urgente ? "URGENTE" : "Recordatorio"}: ${t.descripcion} (${t.vence})`,
+      texto: `Caso: ${caso.titulo}\nTérmino: ${t.descripcion}\nVence: ${t.vence}\n\nIngresa a tu panel para gestionarlo.`,
     });
-    if (res.ok) {
+    if (ok) {
       enviados++;
       await db.from("terminos").update({ ultimo_aviso_en: new Date().toISOString() }).eq("id", t.id);
     }
