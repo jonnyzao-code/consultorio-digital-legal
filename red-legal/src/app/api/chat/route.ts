@@ -23,7 +23,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SISTEMA_CHAT }] },
         contents: mensajes.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
-        generationConfig: { maxOutputTokens: 500 },
+        // Los modelos 3.x gastan parte del límite razonando: margen amplio para que la respuesta no salga cortada.
+        generationConfig: { maxOutputTokens: 4096 },
       }),
     });
     if (!res.ok) throw new Error(`Gemini respondió ${res.status}`);
