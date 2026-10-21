@@ -1,8 +1,8 @@
 // Datos del responsable de la plataforma que aparecen en el contrato y en la política de datos.
 export const EMPRESA = {
   nombre: "DOMINET S.A.S.",
-  nit: process.env.NEXT_PUBLIC_EMPRESA_NIT ?? "(por confirmar)",
-  correo: process.env.NEXT_PUBLIC_EMPRESA_CORREO ?? "contacto@dominetsas.com",
+  nit: "901.170.241-5",
+  correo: "dominetsas@gmail.com",
   ciudad: "Bogotá D.C.",
 };
 
