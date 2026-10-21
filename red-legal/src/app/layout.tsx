@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Chat } from "@/components/chat";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Link href="/terminos/datos" className="underline">Tratamiento de datos</Link> ·{" "}
           <Link href="/terminos/abogados" className="underline">Contrato de abogados</Link>
         </footer>
+        <Chat />
       </body>
     </html>
   );

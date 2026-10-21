@@ -50,7 +50,7 @@ const CLAUSULAS: [string, string[]][] = [
   [
     "Datos personales y confidencialidad",
     [
-      `Cada parte trata los datos personales conforme a la Ley 1581 de 2012 y sus decretos. El Abogado es responsable de los datos de sus clientes y casos; la Plataforma actúa como encargada para almacenarlos con medidas de seguridad. El administrador de la Plataforma solo ve métricas agregadas, no el contenido de los expedientes. Ver la política de tratamiento de datos.`,
+      `Cada parte trata los datos personales conforme a la Ley 1581 de 2012 y sus decretos. El Abogado es responsable de los datos de sus clientes y casos; la Plataforma actúa como encargada para almacenarlos con medidas de seguridad. Para controlar la calidad del servicio, el administrador de la Plataforma ve el avance de los casos (estado, fechas, términos y actuaciones públicas de la Rama Judicial), pero no las notas privadas que el Abogado registra. Ver la política de tratamiento de datos.`,
     ],
   ],
   [

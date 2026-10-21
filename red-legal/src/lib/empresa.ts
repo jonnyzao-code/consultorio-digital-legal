@@ -7,4 +7,4 @@ export const EMPRESA = {
 };
 
 // Cambiar la versión cuando cambie el texto del contrato: queda registrada con cada solicitud.
-export const VERSION_CONTRATO = "1.0 · 21 de octubre de 2026";
+export const VERSION_CONTRATO = "1.1 · 21 de octubre de 2026";

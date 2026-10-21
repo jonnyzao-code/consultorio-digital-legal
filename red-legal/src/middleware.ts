@@ -14,10 +14,10 @@ export async function middleware(request: NextRequest) {
     },
   });
   const { data } = await supabase.auth.getUser();
-  if (!data.user && request.nextUrl.pathname.startsWith("/panel")) {
+  if (!data.user && /^\/(panel|admin)/.test(request.nextUrl.pathname)) {
     return NextResponse.redirect(new URL("/ingresar", request.url));
   }
   return response;
 }
 
-export const config = { matcher: ["/panel/:path*"] };
+export const config = { matcher: ["/panel/:path*", "/admin/:path*"] };

@@ -24,7 +24,8 @@ Producto separado del consultorio jurídico académico (Q10) de dominetsas.com.
 | Minutas de pago: precio por documento con Wompi (acceso 30 días) o cupo mensual del plan; el texto completo solo sale del servidor con acceso (migración 0005) | Hecho |
 | Biblioteca de minutas: peticiones, tutela, desacato, acción popular y de grupo, contratos, títulos valores, poder, recurso, garantía (`/minutas`) | Hecho |
 | Límite diario de la orientación gratuita | Pendiente |
-| Panel del administrador: métricas y solicitudes | Hecho (aprobar con `aprobar_abogado` en SQL) |
+| Panel del administrador `/admin`: resumen e ingresos, cuentas y roles (suspender), aprobar o rechazar abogados (invita por correo), desempeño y avance de casos por abogado, pagos, ventas de minutas y bitácora (migración 0006) | Hecho |
+| Chatbot de atención en todo el sitio (`/api/chat`, Gemini con respuestas básicas de respaldo) | Hecho |
 
 ## Cómo correrlo
 

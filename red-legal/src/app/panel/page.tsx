@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AREAS } from "@/lib/areas";
 import { PLANES, plan as planDe } from "@/lib/planes";
 import { hoyMas } from "@/lib/terminos";
@@ -15,40 +16,7 @@ export default async function Panel({ searchParams }: { searchParams: Promise<{ 
   const { data: perfil } = await supabase.from("perfiles").select("nombre, rol, codigo_referido").eq("id", auth.user!.id).single();
   if (!perfil) return <p>No encontramos tu perfil.</p>;
 
-  if (perfil.rol === "admin") {
-    const [{ data: metricas }, { data: solicitudes }] = await Promise.all([
-      supabase.from("metricas_abogados").select("*"),
-      supabase.from("solicitudes_abogados").select("id, nombre, tarjeta_profesional, ciudad, areas, plan").eq("estado", "pendiente"),
-    ]);
-    return (
-      <div className="space-y-8">
-        <h1 className="text-2xl font-bold text-blue-900">Panel del administrador</h1>
-        <section>
-          <h2 className="mb-2 font-semibold">Desempeño de abogados</h2>
-          <table className="w-full bg-white text-sm">
-            <thead><tr className="text-left">{["Abogado", "Activos", "Cerrados", "Horas 1.ª respuesta", "Días solución", "Términos vencidos", "Calificación"].map((h) => <th key={h} className="border-b p-2">{h}</th>)}</tr></thead>
-            <tbody>
-              {metricas?.map((m) => (
-                <tr key={m.abogado_id}>
-                  <td className="p-2">{m.nombre}</td><td className="p-2">{m.casos_activos}</td><td className="p-2">{m.casos_cerrados}</td>
-                  <td className="p-2">{m.horas_primera_respuesta ?? "–"}</td><td className="p-2">{m.dias_solucion ?? "–"}</td>
-                  <td className={`p-2 ${m.terminos_vencidos > 0 ? "font-semibold text-red-700" : ""}`}>{m.terminos_vencidos}</td>
-                  <td className="p-2">{m.calificacion ?? "–"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-        <section>
-          <h2 className="mb-2 font-semibold">Solicitudes pendientes ({solicitudes?.length ?? 0})</h2>
-          <p className="mb-2 text-xs text-slate-500">Verifica cada tarjeta profesional en el Registro Nacional de Abogados (SIRNA) antes de aprobar.</p>
-          <ul className="space-y-1 text-sm">
-            {solicitudes?.map((s) => <li key={s.id} className="rounded border bg-white p-2">{s.nombre} · TP {s.tarjeta_profesional} · {s.ciudad} · {s.areas.join(", ")} · {s.plan}</li>)}
-          </ul>
-        </section>
-      </div>
-    );
-  }
+  if (perfil.rol === "admin") redirect("/admin");
 
   const { data: casos } = await supabase.from("casos").select("id, titulo, area, radicado, estado, vigilar").order("abierto_en", { ascending: false });
   const { data: abogado } = perfil.rol === "abogado" ? await supabase.from("abogados").select("plan").eq("id", auth.user!.id).maybeSingle() : { data: null };
