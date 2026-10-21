@@ -12,17 +12,20 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: m ? `${m.titulo} · Minutas Red Legal DOMINET` : "Minuta" };
 }
 
-// Sin acceso solo se envía al navegador el comienzo del texto: el resto nunca sale del servidor.
+// Sin acceso solo se envía al navegador el comienzo del texto (máx. 8 líneas o el 20 %): el resto nunca sale del servidor.
 const vistaPrevia = (texto: string) => {
   const lineas = texto.split("\n");
-  return `${lineas.slice(0, Math.max(12, Math.ceil(lineas.length * 0.35))).join("\n")}\n\n[…] El documento completo se habilita al comprarlo o con tu plan de abogado.`;
+  return lineas.slice(0, Math.max(3, Math.min(8, Math.ceil(lineas.length * 0.2)))).join("\n");
 };
 
-export default async function PaginaMinuta({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; pago?: string }> }) {
+export default async function PaginaMinuta({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; pago?: string; como?: string }> }) {
   const m = minuta((await params).id);
   if (!m) notFound();
-  const { error, pago } = await searchParams;
-  const acceso = await accesoMinuta(m.id);
+  const { error, pago, como } = await searchParams;
+  const real = await accesoMinuta(m.id);
+  // "Ver como cliente" deja al administrador comprobar el bloqueo y el botón de pago.
+  const comoCliente = real.tipo === "libre" && real.admin && como === "cliente";
+  const acceso = comoCliente ? ({ tipo: "comprar", conSesion: true } as const) : real;
   const precio = precioMinuta(m.id);
   const libre = acceso.tipo === "libre";
 
@@ -39,6 +42,14 @@ export default async function PaginaMinuta({ params, searchParams }: { params: P
       </div>
 
       {error && <p className="rounded bg-red-50 p-2 text-sm text-red-800 print:hidden">{error}</p>}
+      {real.tipo === "libre" && real.admin && (
+        <p className="rounded-lg bg-slate-900 p-3 text-sm text-white print:hidden">
+          {comoCliente ? "Así ve esta minuta un cliente: solo la vista previa y el botón de pago. " : "Eres administrador: ves y descargas las minutas sin pagar. Un cliente solo ve la vista previa y el botón de pago. "}
+          <Link href={comoCliente ? `/minutas/${m.id}` : `/minutas/${m.id}?como=cliente`} className="font-semibold text-amber-300 underline">
+            {comoCliente ? "Volver a la vista de administrador" : "Ver como cliente"}
+          </Link>
+        </p>
+      )}
       {libre ? (
         acceso.vence && <p className="text-sm text-green-800 print:hidden">Tienes acceso a esta minuta hasta el {acceso.vence}.</p>
       ) : (

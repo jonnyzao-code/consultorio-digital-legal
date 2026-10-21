@@ -63,7 +63,20 @@ export function Formato({ minuta, bloqueado }: { minuta: Minuta; bloqueado: bool
           <button type="button" onClick={() => window.print()} className="rounded-md border px-4 py-2">Imprimir o guardar PDF</button>
           <button type="button" onClick={copiar} className="rounded-md border px-4 py-2">{copiado ? "Copiado ✓" : "Copiar texto"}</button>
         </div>}
-        <pre className={`${bloqueado ? "select-none print:hidden " : ""}max-h-[75vh] overflow-auto whitespace-pre-wrap rounded-lg border bg-white p-5 font-serif text-sm leading-relaxed print:max-h-none print:overflow-visible print:border-0 print:p-0`}>{texto}</pre>
+        {bloqueado ? (
+          // Vista previa: solo el comienzo real; el resto es relleno difuminado y no se puede copiar ni imprimir.
+          <div className="relative select-none overflow-hidden rounded-lg border bg-white p-5 font-serif text-sm leading-relaxed print:hidden" onCopy={(e) => e.preventDefault()}>
+            <pre className="whitespace-pre-wrap font-serif">{texto}</pre>
+            <div aria-hidden className="mt-2 space-y-2 blur-[3px]">
+              {Array.from({ length: 14 }, (_, i) => <div key={i} className="h-3 rounded bg-slate-300" style={{ width: `${60 + ((i * 37) % 40)}%` }} />)}
+            </div>
+            <div className="absolute inset-x-0 bottom-0 flex h-2/3 items-end justify-center bg-gradient-to-t from-white via-white/90 to-transparent p-6">
+              <p className="rounded-full bg-blue-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">🔒 Documento completo al comprar o con tu plan</p>
+            </div>
+          </div>
+        ) : (
+          <pre className="max-h-[75vh] overflow-auto whitespace-pre-wrap rounded-lg border bg-white p-5 font-serif text-sm leading-relaxed print:max-h-none print:overflow-visible print:border-0 print:p-0">{texto}</pre>
+        )}
         <p className="text-xs text-slate-500 print:hidden">Modelo de referencia. No reemplaza la asesoría de un abogado.</p>
       </div>
     </div>

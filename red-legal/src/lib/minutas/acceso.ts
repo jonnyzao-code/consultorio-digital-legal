@@ -4,7 +4,7 @@ import { hoyMas } from "@/lib/terminos";
 import { supabaseServer } from "@/lib/supabase/server";
 
 export type Acceso =
-  | { tipo: "libre"; vence: string | null }
+  | { tipo: "libre"; vence: string | null; admin?: boolean }
   | { tipo: "plan"; usados: number; limite: number | null }
   | { tipo: "comprar"; conSesion: boolean };
 
@@ -17,9 +17,10 @@ export async function accesoMinuta(minutaId: string): Promise<Acceso> {
 
   const [{ data: perfil }, { data: acceso }] = await Promise.all([
     supabase.from("perfiles").select("rol").eq("id", auth.user.id).single(),
-    supabase.from("accesos_minutas").select("vence").eq("minuta_id", minutaId).gte("vence", hoy).order("vence", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("accesos_minutas").select("vence").eq("perfil_id", auth.user.id).eq("minuta_id", minutaId).gte("vence", hoy).order("vence", { ascending: false }).limit(1).maybeSingle(),
   ]);
-  if (perfil?.rol === "admin") return { tipo: "libre", vence: null };
+  // El administrador ve todo sin pagar; los clientes y abogados sin plan siempre ven el precio.
+  if (perfil?.rol === "admin") return { tipo: "libre", vence: null, admin: true };
   if (acceso) return { tipo: "libre", vence: acceso.vence };
 
   if (perfil?.rol === "abogado") {
@@ -29,6 +30,7 @@ export async function accesoMinuta(minutaId: string): Promise<Acceso> {
       const { count } = await supabase
         .from("accesos_minutas")
         .select("id", { count: "exact", head: true })
+        .eq("perfil_id", auth.user.id)
         .eq("origen", "plan")
         .gte("creado_en", inicioMes);
       const limite = planDe(vigente.plan).minutasMes;
