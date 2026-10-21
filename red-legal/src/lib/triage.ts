@@ -86,7 +86,22 @@ const lista = (max: number, items: object = texto) => ({ type: "ARRAY", items, m
 
 async function orientarConGemini(mensajes: Mensaje[]): Promise<Triage> {
   const modelo = process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+  // El plan gratuito a veces responde 429 o 503 por alta demanda: se reintenta hasta 2 veces.
+  let res: Response | undefined;
+  for (let intento = 0; intento < 3; intento++) {
+    if (intento > 0) await new Promise((r) => setTimeout(r, 1500 * intento));
+    res = await pedirGemini(modelo, mensajes);
+    if (res.status !== 429 && res.status !== 503) break;
+  }
+  if (!res!.ok) throw new Error(`Gemini respondió ${res!.status}: ${(await res!.text()).slice(0, 300)}`);
+  const data = await res!.json();
+  const salida = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!salida) throw new Error("La IA no devolvió una orientación");
+  return TriageSchema.parse(JSON.parse(salida));
+}
+
+function pedirGemini(modelo: string, mensajes: Mensaje[]) {
+  return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
     body: JSON.stringify({
@@ -110,9 +125,4 @@ async function orientarConGemini(mensajes: Mensaje[]): Promise<Triage> {
       },
     }),
   });
-  if (!res.ok) throw new Error(`Gemini respondió ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
-  const salida = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!salida) throw new Error("La IA no devolvió una orientación");
-  return TriageSchema.parse(JSON.parse(salida));
 }
