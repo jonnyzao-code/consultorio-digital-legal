@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AREAS } from "@/lib/areas";
+import { hoyMas } from "@/lib/terminos";
 import { supabaseServer } from "@/lib/supabase/server";
 import { crearCaso } from "./actions";
 import { pagarSuscripcion } from "@/app/pagos/actions";
@@ -48,11 +49,11 @@ export default async function Panel() {
   }
 
   const { data: casos } = await supabase.from("casos").select("id, titulo, area, radicado, estado").order("abierto_en", { ascending: false });
-  const hoy = new Date().toISOString().slice(0, 10);
+  const hoy = hoyMas();
   const { data: vigencia } = perfil.rol === "abogado"
     ? await supabase.from("suscripciones").select("plan, vigente_hasta").order("vigente_hasta", { ascending: false }).limit(1).maybeSingle()
     : { data: null };
-  const limite = new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10);
+  const limite = hoyMas(7);
   const { data: proximos } = perfil.rol === "abogado"
     ? await supabase.from("terminos").select("id, descripcion, vence, urgente, caso_id").eq("cumplido", false).lte("vence", limite).order("vence")
     : { data: [] };

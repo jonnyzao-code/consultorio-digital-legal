@@ -38,3 +38,21 @@ Para desplegar, conecta el repositorio a Vercel y carga las mismas variables de 
 - El administrador ve métricas agregadas, no el contenido de los expedientes.
 - La plataforma no cobra porcentaje de honorarios ni paga comisiones por clientes.
 - Los festivos y la vacancia judicial deben revisarse cada año contra el calendario oficial.
+
+## Publicar en Cloudflare (principal)
+
+Se usa el adaptador OpenNext (`wrangler.jsonc`, `open-next.config.ts`).
+
+1. `npx wrangler login` (una vez).
+2. Las variables `NEXT_PUBLIC_*` se incrustan al compilar: defínelas en `.env.local` o en el entorno antes de compilar.
+3. `npm run cf:deploy` compila y publica el Worker `red-legal`.
+4. En el panel de Cloudflare (Workers → red-legal → Settings → Variables and Secrets) carga como **secretos**: `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY` y, cuando apliquen, `ANTHROPIC_API_KEY`, `WOMPI_INTEGRITY_SECRET`, `WOMPI_EVENTS_SECRET`, `RESEND_API_KEY`, `CRON_SECRET`.
+5. Dominio propio: Workers → red-legal → Settings → Domains & Routes → `abogados.dominetsas.com` (el dominio debe estar en Cloudflare).
+
+`npm run cf:preview` prueba el Worker localmente.
+
+## Respaldo en el NUC
+
+- **App de reserva:** `npm ci && npm run build && npm start` con el mismo `.env.local`, expuesta con un túnel de Cloudflare (`cloudflared`) en un subdominio de respaldo.
+- **Alertas diarias:** cron del NUC que llama `curl -H "Authorization: Bearer $CRON_SECRET" https://abogados.dominetsas.com/api/cron/alertas`.
+- **Copia de la base:** `pg_dump` diario de Supabase a una carpeta local del NUC.

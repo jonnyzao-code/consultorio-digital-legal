@@ -50,3 +50,8 @@ export function venceTermino(desde: string, dias: number, judicial = true): stri
   }
   return iso(d);
 }
+
+/** Fecha de hoy más `dias` calendario, como "YYYY-MM-DD". */
+export function hoyMas(dias = 0): string {
+  return iso(sumar(new Date(), dias));
+}

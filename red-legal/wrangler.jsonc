@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "red-legal",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  // Valores no secretos. Las claves (SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY, etc.)
+  // se cargan en el panel de Cloudflare como secretos, nunca aquí.
+  "vars": {
+    "GEMINI_MODEL": "gemini-3.8-flash"
+  }
+}

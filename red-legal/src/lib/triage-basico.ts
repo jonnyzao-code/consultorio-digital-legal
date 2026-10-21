@@ -20,7 +20,7 @@ const CLAVES: Record<AreaId, string[]> = {
 const URGENTE = ["captur", "desaloj", "lanzamiento", "violen", "amenaz", "golpe", "agredi", "agresi", "menor de edad", "vence", "mañana", "plazo", "termino", "audiencia", "urgente", "riesgo"];
 const RIESGO_VIDA = ["violen", "amenaz", "golpe", "agredi", "agresi", "abus", "riesgo"];
 
-const normalizar = (t: string) => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const normalizar = (t: string) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 export function orientarBasico(mensajes: Mensaje[]): Triage {
   const texto = normalizar(mensajes.filter((m) => m.role === "user").map((m) => m.content).join(" "));
