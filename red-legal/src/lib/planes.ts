@@ -8,6 +8,7 @@ export type Plan = {
   casosActivos: number | null; // null = ilimitado
   procesosVigilados: number;
   abogados: number;
+  minutasMes: number | null; // null = ilimitadas
   servicios: string[];
 };
 
@@ -19,12 +20,13 @@ export const PLANES: Plan[] = [
     casosActivos: 10,
     procesosVigilados: 10,
     abogados: 1,
+    minutasMes: 5,
     servicios: [
       "Perfil verificado en el directorio",
       "Hasta 10 casos activos",
       "Vigilancia de 10 procesos en la Rama Judicial",
       "Calculadora de términos con festivos y vacancia",
-      "Biblioteca de minutas y formatos",
+      "5 minutas y formatos al mes",
     ],
   },
   {
@@ -34,10 +36,12 @@ export const PLANES: Plan[] = [
     casosActivos: null,
     procesosVigilados: 60,
     abogados: 1,
+    minutasMes: 30,
     servicios: [
       "Todo lo del plan Básico",
       "Casos ilimitados",
       "Vigilancia diaria de 60 procesos con aviso de actuaciones nuevas",
+      "30 minutas y formatos al mes",
       "Alertas por correo de términos por vencer",
       "Prioridad en la remisión de clientes",
       "Revisión de conceptos preliminares pagados",
@@ -50,10 +54,12 @@ export const PLANES: Plan[] = [
     casosActivos: null,
     procesosVigilados: 300,
     abogados: 5,
+    minutasMes: null,
     servicios: [
       "Todo lo del plan Profesional",
       "Hasta 5 abogados de la firma",
       "Vigilancia de 300 procesos",
+      "Minutas y formatos ilimitados",
       "Perfil de firma destacado en el directorio",
       "Soporte prioritario",
     ],

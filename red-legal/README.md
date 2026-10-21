@@ -21,6 +21,7 @@ Producto separado del consultorio jurídico académico (Q10) de dominetsas.com.
 | Planes con servicios y límites (`/planes`, `src/lib/planes.ts`; límites aplicados en la base) | Hecho |
 | Contrato de vinculación de abogados y política de datos (`/terminos/abogados`, `/terminos/datos`) | Hecho |
 | Vigilancia de procesos en la Rama Judicial: consulta por radicado, actuaciones nuevas, términos del despacho (`src/lib/rama.ts`, `/api/cron/procesos`) | Hecho |
+| Minutas de pago: precio por documento con Wompi (acceso 30 días) o cupo mensual del plan; el texto completo solo sale del servidor con acceso (migración 0005) | Hecho |
 | Biblioteca de minutas: peticiones, tutela, desacato, acción popular y de grupo, contratos, títulos valores, poder, recurso, garantía (`/minutas`) | Hecho |
 | Límite diario de la orientación gratuita | Pendiente |
 | Panel del administrador: métricas y solicitudes | Hecho (aprobar con `aprobar_abogado` en SQL) |

@@ -20,7 +20,7 @@ export function totalCentavos(base: number, descuentoPct = 0): number {
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
-export function nuevaReferencia(tipo: "SUS" | "CON"): string {
+export function nuevaReferencia(tipo: "SUS" | "CON" | "MIN"): string {
   return `${tipo}-${randomUUID()}`;
 }
 

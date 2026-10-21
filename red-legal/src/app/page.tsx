@@ -25,7 +25,7 @@ export default function Home() {
       <section className="grid gap-4 sm:grid-cols-2">
         <Link href="/minutas" className="rounded-lg border bg-white p-5 hover:border-blue-900">
           <h2 className="font-semibold text-blue-900">Minutas y formatos jurídicos</h2>
-          <p className="mt-1 text-sm text-slate-600">Derechos de petición, tutelas, acciones populares y de grupo, contratos, pagarés y letras de cambio. Llénalos en línea y descárgalos en Word o PDF.</p>
+          <p className="mt-1 text-sm text-slate-600">Derechos de petición, tutelas, acciones populares y de grupo, contratos, pagarés y letras de cambio. Desde $9.900, o incluidos en los planes para abogados.</p>
         </Link>
         <Link href="/planes" className="rounded-lg border bg-white p-5 hover:border-blue-900">
           <h2 className="font-semibold text-blue-900">Para abogados: seguimiento de procesos</h2>

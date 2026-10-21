@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { DIAS_ACCESO_MINUTA } from "@/lib/minutas/precios";
+import { hoyMas } from "@/lib/terminos";
 import { ESTADOS, eventoValido, type EventoWompi } from "@/lib/wompi";
 
 export async function POST(req: Request) {
@@ -45,6 +47,14 @@ export async function POST(req: Request) {
       referencia_pasarela: tx.id,
     });
     await db.from("abogados").update({ plan: pago.plan }).eq("id", pago.perfil_id);
+  } else if (pago.tipo === "minuta") {
+    await db.from("accesos_minutas").insert({
+      perfil_id: pago.perfil_id,
+      minuta_id: pago.minuta_id,
+      origen: "pago",
+      pago_id: pago.id,
+      vence: hoyMas(DIAS_ACCESO_MINUTA),
+    });
   } else if (pago.consulta_id) {
     await db.from("consultas").update({ concepto_pagado: true }).eq("id", pago.consulta_id);
   }

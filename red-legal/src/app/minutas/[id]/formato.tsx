@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { llenar, type Minuta } from "@/lib/minutas";
+import { llenar } from "@/lib/minutas/llenar";
+import type { Minuta } from "@/lib/minutas/tipos";
 
 const campo = "w-full rounded-md border bg-white p-2 text-sm";
 
@@ -9,7 +10,7 @@ const campo = "w-full rounded-md border bg-white p-2 text-sm";
 const fechaLarga = (v: string) =>
   /^\d{4}-\d{2}-\d{2}$/.test(v) ? new Date(`${v}T12:00:00`).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" }) : v;
 
-export function Formato({ minuta }: { minuta: Minuta }) {
+export function Formato({ minuta, bloqueado }: { minuta: Minuta; bloqueado: boolean }) {
   const [valores, setValores] = useState<Record<string, string>>({});
   const [copiado, setCopiado] = useState(false);
 
@@ -57,12 +58,12 @@ export function Formato({ minuta }: { minuta: Minuta }) {
         ))}
       </form>
       <div className="space-y-3 lg:sticky lg:top-4 lg:self-start">
-        <div className="flex flex-wrap gap-2 text-sm print:hidden">
+        {!bloqueado && <div className="flex flex-wrap gap-2 text-sm print:hidden">
           <button type="button" onClick={descargarWord} className="rounded-md bg-blue-900 px-4 py-2 text-white">Descargar Word</button>
           <button type="button" onClick={() => window.print()} className="rounded-md border px-4 py-2">Imprimir o guardar PDF</button>
           <button type="button" onClick={copiar} className="rounded-md border px-4 py-2">{copiado ? "Copiado ✓" : "Copiar texto"}</button>
-        </div>
-        <pre className="max-h-[75vh] overflow-auto whitespace-pre-wrap rounded-lg border bg-white p-5 font-serif text-sm leading-relaxed print:max-h-none print:overflow-visible print:border-0 print:p-0">{texto}</pre>
+        </div>}
+        <pre className={`${bloqueado ? "select-none print:hidden " : ""}max-h-[75vh] overflow-auto whitespace-pre-wrap rounded-lg border bg-white p-5 font-serif text-sm leading-relaxed print:max-h-none print:overflow-visible print:border-0 print:p-0`}>{texto}</pre>
         <p className="text-xs text-slate-500 print:hidden">Modelo de referencia. No reemplaza la asesoría de un abogado.</p>
       </div>
     </div>
