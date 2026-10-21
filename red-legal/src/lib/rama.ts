@@ -1,4 +1,5 @@
 // Consulta de Procesos Nacional Unificada (CPNU) de la Rama Judicial.
+// Desde Cloudflare la Rama tarda hasta ~10 s por consulta: tiempo de espera holgado.
 // Portado de la herramienta de seguimiento existente (lovable-juridico). La API solo responde JSON en el puerto 448.
 const BASE = "https://consultaprocesos.ramajudicial.gov.co:448/api/v2";
 
@@ -31,7 +32,7 @@ async function getJson(url: string) {
   let ultimo: unknown;
   for (let intento = 0; intento < 3; intento++) {
     try {
-      const res = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(15_000) });
+      const res = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(25_000) });
       if (!res.ok) throw new Error(`el portal respondió ${res.status}`);
       return await res.json();
     } catch (e) {

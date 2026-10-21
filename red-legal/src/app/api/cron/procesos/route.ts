@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   if (!autorizado(req)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  const lote = Math.min(Number(new URL(req.url).searchParams.get("lote") ?? 4) || 4, 20);
+  const lote = Math.min(Number(new URL(req.url).searchParams.get("lote") ?? 3) || 3, 10);
   const db = supabaseAdmin();
   const antes = new Date(Date.now() - 20 * 3_600_000).toISOString();
   const { data: casos, error } = await db

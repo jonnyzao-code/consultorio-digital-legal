@@ -60,5 +60,5 @@ Se usa el adaptador OpenNext (`wrangler.jsonc`, `open-next.config.ts`).
 
 - **App de reserva:** `npm ci && npm run build && npm start` con el mismo `.env.local`, expuesta con un túnel de Cloudflare (`cloudflared`) en un subdominio de respaldo.
 - **Alertas diarias:** cron del NUC que llama `curl -H "Authorization: Bearer $CRON_SECRET" https://abogados.dominetsas.com/api/cron/alertas`.
-- **Vigilancia de procesos:** cron del NUC cada 15 minutos a `https://abogados.dominetsas.com/api/cron/procesos?lote=4` (mismo encabezado). Revisa por lotes los procesos no consultados en 20 horas y avisa por correo las actuaciones nuevas. La API de la Rama solo responde en el puerto 448.
+- **Vigilancia de procesos:** cron del NUC cada 15 minutos a `https://abogados.dominetsas.com/api/cron/procesos?lote=3` (mismo encabezado). Revisa por lotes los procesos no consultados en 20 horas y avisa por correo las actuaciones nuevas. La API de la Rama solo responde en el puerto 448.
 - **Copia de la base:** `pg_dump` diario de Supabase a una carpeta local del NUC.
