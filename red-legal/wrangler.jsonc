@@ -13,6 +13,8 @@
   // Valores no secretos. Las claves (SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY, etc.)
   // se cargan en el panel de Cloudflare como secretos, nunca aquí.
   "vars": {
-    "GEMINI_MODEL": "gemini-3.8-flash"
+    "GEMINI_MODEL": "gemini-3.8-flash",
+    // Decisión de JONNY: la app anterior (Lovable) sigue recibiendo los avisos de pago de Wompi.
+    "WOMPI_REENVIAR_URL": "https://legal-hound-app.lovable.app/api/public/wompi"
   }
 }

@@ -4,9 +4,26 @@ import { DIAS_ACCESO_MINUTA } from "@/lib/minutas/precios";
 import { hoyMas } from "@/lib/terminos";
 import { ESTADOS, eventoValido, type EventoWompi } from "@/lib/wompi";
 
+// Wompi admite una sola URL de eventos: la app anterior de la misma cuenta los recibe reenviados tal cual.
+async function reenviar(cuerpo: string) {
+  const destino = process.env.WOMPI_REENVIAR_URL;
+  if (!destino) return;
+  await fetch(destino, { method: "POST", headers: { "Content-Type": "application/json" }, body: cuerpo, signal: AbortSignal.timeout(8_000) }).catch(
+    (e) => console.error("No se pudo reenviar el evento de Wompi", e),
+  );
+}
+
 export async function POST(req: Request) {
-  const evento = (await req.json().catch(() => null)) as EventoWompi | null;
+  const cuerpo = await req.text();
+  const evento = (() => {
+    try {
+      return JSON.parse(cuerpo) as EventoWompi;
+    } catch {
+      return null;
+    }
+  })();
   if (!evento?.signature || !eventoValido(evento)) return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
+  await reenviar(cuerpo);
   if (evento.event !== "transaction.updated") return NextResponse.json({ ok: true });
 
   const tx = evento.data.transaction;
