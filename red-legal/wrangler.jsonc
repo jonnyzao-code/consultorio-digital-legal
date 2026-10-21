@@ -8,6 +8,8 @@
   // Dominio propio (Cloudflare crea el DNS y el certificado). Se mantiene también workers.dev.
   "routes": [{ "pattern": "abogados.dominetsas.com", "custom_domain": true }],
   "workers_dev": true,
+  // No borrar en cada publicación las variables puestas a mano en el panel.
+  "keep_vars": true,
   // Valores no secretos. Las claves (SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY, etc.)
   // se cargan en el panel de Cloudflare como secretos, nunca aquí.
   "vars": {
