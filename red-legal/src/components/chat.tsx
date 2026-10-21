@@ -20,7 +20,10 @@ export function Chat() {
   const [enviando, setEnviando] = useState(false);
   const fin = useRef<HTMLDivElement>(null);
 
-  useEffect(() => fin.current?.scrollIntoView({ behavior: "smooth" }), [mensajes, abierto]);
+  // Llaves: scrollIntoView puede devolver una promesa y React la tomaría como función de limpieza.
+  useEffect(() => {
+    fin.current?.scrollIntoView({ behavior: "smooth" });
+  }, [mensajes, abierto]);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();

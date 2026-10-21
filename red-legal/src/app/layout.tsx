@@ -73,7 +73,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <p className="text-xs">{EMPRESA.nombre} · NIT {EMPRESA.nit}<br />{EMPRESA.correo} · {EMPRESA.ciudad}</p>
             </div>
           </div>
-          <p className="border-t border-white/5 py-4 text-center text-xs">© {new Date().getFullYear()} {EMPRESA.nombre}. Todos los derechos reservados.</p>
+          <p className="border-t border-white/5 py-4 text-center text-xs">© {new Date().getFullYear()} {EMPRESA.nombre} Todos los derechos reservados.</p>
         </footer>
         <Chat />
       </body>
