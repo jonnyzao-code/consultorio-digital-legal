@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { autorizado } from "@/lib/cron";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { venceTermino } from "@/lib/terminos";
 
 // Ejecutado a diario por Vercel Cron. Avisa por correo los términos que vencen en 3 días hábiles o menos.
 export async function GET(req: Request) {
-  if (req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!autorizado(req)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const db = supabaseAdmin();

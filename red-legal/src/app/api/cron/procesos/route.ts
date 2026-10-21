@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { autorizado } from "@/lib/cron";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sincronizarCaso } from "@/lib/vigilancia";
 
 // Revisa en la Rama Judicial los procesos vigilados que no se han consultado en las últimas 20 horas.
 // Trabaja por lotes pequeños (Cloudflare limita las conexiones por solicitud): el NUC lo llama cada 15 minutos.
 export async function GET(req: Request) {
-  if (req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!autorizado(req)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
   const lote = Math.min(Number(new URL(req.url).searchParams.get("lote") ?? 4) || 4, 20);
