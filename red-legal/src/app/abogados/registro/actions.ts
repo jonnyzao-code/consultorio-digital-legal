@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { AREA_IDS } from "@/lib/areas";
+import { VERSION_CONTRATO } from "@/lib/empresa";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const Solicitud = z.object({
@@ -30,7 +31,7 @@ export async function registrarAbogado(_: Estado, form: FormData): Promise<Estad
   const { nombre, email, telefono, ciudad, tarjeta_profesional, areas, plan, codigo_referido } = parsed.data;
   const { error } = await supabaseAdmin()
     .from("solicitudes_abogados")
-    .insert({ nombre, email, telefono, ciudad, tarjeta_profesional, areas, plan, codigo_referido });
+    .insert({ nombre, email, telefono, ciudad, tarjeta_profesional, areas, plan, codigo_referido, terminos_version: VERSION_CONTRATO });
   if (error) {
     if (error.code === "23505") return { ok: false, mensaje: "Ya existe una solicitud con ese correo o tarjeta profesional." };
     console.error(error);

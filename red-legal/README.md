@@ -18,6 +18,10 @@ Producto separado del consultorio jurídico académico (Q10) de dominetsas.com.
 | Pagos con Wompi: suscripciones (mensual o anual, promo fundadores) y concepto preliminar; confirmación por evento firmado (`/api/wompi/eventos`) | Hecho |
 | Cobro recurrente automático (tokenización Wompi) y factura electrónica DIAN | Pendiente |
 | Alertas diarias por correo de términos próximos (`/api/cron/alertas`, Resend) | Hecho |
+| Planes con servicios y límites (`/planes`, `src/lib/planes.ts`; límites aplicados en la base) | Hecho |
+| Contrato de vinculación de abogados y política de datos (`/terminos/abogados`, `/terminos/datos`) | Hecho |
+| Vigilancia de procesos en la Rama Judicial: consulta por radicado, actuaciones nuevas, términos del despacho (`src/lib/rama.ts`, `/api/cron/procesos`) | Hecho |
+| Biblioteca de minutas: peticiones, tutela, desacato, acción popular y de grupo, contratos, títulos valores, poder, recurso, garantía (`/minutas`) | Hecho |
 | Límite diario de la orientación gratuita | Pendiente |
 | Panel del administrador: métricas y solicitudes | Hecho (aprobar con `aprobar_abogado` en SQL) |
 
@@ -55,4 +59,5 @@ Se usa el adaptador OpenNext (`wrangler.jsonc`, `open-next.config.ts`).
 
 - **App de reserva:** `npm ci && npm run build && npm start` con el mismo `.env.local`, expuesta con un túnel de Cloudflare (`cloudflared`) en un subdominio de respaldo.
 - **Alertas diarias:** cron del NUC que llama `curl -H "Authorization: Bearer $CRON_SECRET" https://abogados.dominetsas.com/api/cron/alertas`.
+- **Vigilancia de procesos:** cron del NUC cada 15 minutos a `https://abogados.dominetsas.com/api/cron/procesos?lote=4` (mismo encabezado). Revisa por lotes los procesos no consultados en 20 horas y avisa por correo las actuaciones nuevas. La API de la Rama solo responde en el puerto 448.
 - **Copia de la base:** `pg_dump` diario de Supabase a una carpeta local del NUC.

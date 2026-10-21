@@ -17,8 +17,20 @@ export default function Home() {
         </p>
         <div className="flex flex-wrap gap-3">
           <Link href="/orientacion" className="rounded-md bg-blue-900 px-5 py-3 text-white">Tengo un problema legal</Link>
-          <Link href="/abogados/registro" className="rounded-md border border-blue-900 px-5 py-3 text-blue-900">Soy abogado</Link>
+          <Link href="/minutas" className="rounded-md border border-blue-900 px-5 py-3 text-blue-900">Minutas y formatos</Link>
+          <Link href="/planes" className="rounded-md border border-blue-900 px-5 py-3 text-blue-900">Soy abogado</Link>
         </div>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2">
+        <Link href="/minutas" className="rounded-lg border bg-white p-5 hover:border-blue-900">
+          <h2 className="font-semibold text-blue-900">Minutas y formatos jurídicos</h2>
+          <p className="mt-1 text-sm text-slate-600">Derechos de petición, tutelas, acciones populares y de grupo, contratos, pagarés y letras de cambio. Llénalos en línea y descárgalos en Word o PDF.</p>
+        </Link>
+        <Link href="/planes" className="rounded-lg border bg-white p-5 hover:border-blue-900">
+          <h2 className="font-semibold text-blue-900">Para abogados: seguimiento de procesos</h2>
+          <p className="mt-1 text-sm text-slate-600">Vigilancia diaria de tus procesos en la Rama Judicial, aviso de actuaciones nuevas, términos con festivos y vacancia, y clientes remitidos.</p>
+        </Link>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">

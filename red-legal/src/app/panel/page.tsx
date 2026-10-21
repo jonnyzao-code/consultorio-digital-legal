@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AREAS } from "@/lib/areas";
+import { PLANES, plan as planDe } from "@/lib/planes";
 import { hoyMas } from "@/lib/terminos";
 import { supabaseServer } from "@/lib/supabase/server";
 import { crearCaso } from "./actions";
@@ -7,7 +8,8 @@ import { pagarSuscripcion } from "@/app/pagos/actions";
 
 const campo = "rounded-md border bg-white p-2";
 
-export default async function Panel() {
+export default async function Panel({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
   const supabase = await supabaseServer();
   const { data: auth } = await supabase.auth.getUser();
   const { data: perfil } = await supabase.from("perfiles").select("nombre, rol, codigo_referido").eq("id", auth.user!.id).single();
@@ -48,7 +50,11 @@ export default async function Panel() {
     );
   }
 
-  const { data: casos } = await supabase.from("casos").select("id, titulo, area, radicado, estado").order("abierto_en", { ascending: false });
+  const { data: casos } = await supabase.from("casos").select("id, titulo, area, radicado, estado, vigilar").order("abierto_en", { ascending: false });
+  const { data: abogado } = perfil.rol === "abogado" ? await supabase.from("abogados").select("plan").eq("id", auth.user!.id).maybeSingle() : { data: null };
+  const miPlan = planDe(abogado?.plan);
+  const activos = casos?.filter((c) => c.estado !== "cerrado") ?? [];
+  const vigilados = activos.filter((c) => c.vigilar && c.radicado).length;
   const hoy = hoyMas();
   const { data: vigencia } = perfil.rol === "abogado"
     ? await supabase.from("suscripciones").select("plan, vigente_hasta").order("vigente_hasta", { ascending: false }).limit(1).maybeSingle()
@@ -63,7 +69,16 @@ export default async function Panel() {
       <div>
         <h1 className="text-2xl font-bold text-blue-900">Hola, {perfil.nombre}</h1>
         <p className="text-sm text-slate-500">Tu código de referido: <span className="font-mono">{perfil.codigo_referido}</span></p>
+        {error && <p className="mt-2 rounded bg-red-50 p-2 text-sm text-red-800">{error}</p>}
       </div>
+
+      {perfil.rol === "abogado" && (
+        <section className="grid gap-2 text-sm sm:grid-cols-3">
+          <div className="rounded-lg border bg-white p-3"><p className="text-slate-500">Plan</p><p className="font-semibold">{miPlan.nombre}</p></div>
+          <div className="rounded-lg border bg-white p-3"><p className="text-slate-500">Casos activos</p><p className="font-semibold">{activos.length} / {miPlan.casosActivos ?? "ilimitados"}</p></div>
+          <div className="rounded-lg border bg-white p-3"><p className="text-slate-500">Procesos vigilados</p><p className="font-semibold">{vigilados} / {miPlan.procesosVigilados}</p></div>
+        </section>
+      )}
 
       {perfil.rol === "abogado" && (
         <section className="rounded-lg border bg-white p-4">
@@ -75,9 +90,7 @@ export default async function Panel() {
           </p>
           <form action={pagarSuscripcion} className="flex flex-wrap gap-2 text-sm">
             <select name="plan" defaultValue={vigencia?.plan ?? "profesional"} className={campo}>
-              <option value="basico">Básico · $49.900/mes</option>
-              <option value="profesional">Profesional · $99.900/mes</option>
-              <option value="firma">Firma · $249.900/mes</option>
+              {PLANES.map((p) => <option key={p.id} value={p.id}>{p.nombre} · {p.precio}</option>)}
             </select>
             <select name="periodicidad" className={campo}>
               <option value="mensual">Mensual</option>
@@ -85,7 +98,7 @@ export default async function Panel() {
             </select>
             <button className="rounded-md bg-blue-900 px-4 py-2 text-white">Pagar con Wompi</button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">Precios más IVA.</p>
+          <p className="mt-2 text-xs text-slate-500">Precios más IVA. <Link href="/planes" className="underline">Qué incluye cada plan</Link></p>
         </section>
       )}
 
@@ -110,7 +123,7 @@ export default async function Panel() {
           {casos?.map((c) => (
             <li key={c.id} className="rounded border bg-white p-2">
               <Link href={`/panel/casos/${c.id}`} className="font-medium">{c.titulo}</Link>
-              <span className="text-slate-500"> · {c.area} · {c.radicado ?? "sin radicado"} · {c.estado.replace("_", " ")}</span>
+              <span className="text-slate-500"> · {c.area} · {c.radicado ?? "sin radicado"} · {c.estado.replace("_", " ")}{c.vigilar && c.radicado && c.estado !== "cerrado" ? " · vigilado" : ""}</span>
             </li>
           ))}
         </ul>
@@ -121,7 +134,7 @@ export default async function Panel() {
           <h2 className="font-semibold sm:col-span-2">Nuevo caso</h2>
           <input name="titulo" required placeholder="Título del caso" className={campo} />
           <select name="area" className={campo}>{AREAS.map((a) => <option key={a.id} value={a.id}>{a.nombre}</option>)}</select>
-          <input name="radicado" placeholder="Radicado (23 dígitos)" className={campo} />
+          <input name="radicado" placeholder="Radicado de 23 dígitos (opcional, para vigilarlo)" className={campo} />
           <input name="despacho" placeholder="Despacho o juzgado" className={campo} />
           <button className="rounded-md bg-blue-900 px-4 py-2 text-white sm:col-span-2">Crear caso</button>
         </form>

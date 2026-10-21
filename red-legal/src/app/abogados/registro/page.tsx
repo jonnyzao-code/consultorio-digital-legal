@@ -1,14 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { AREAS } from "@/lib/areas";
+import { PLANES } from "@/lib/planes";
 import { registrarAbogado, type Estado } from "./actions";
 
-const PLANES = [
-  { id: "basico", nombre: "Básico", precio: "$49.900/mes" },
-  { id: "profesional", nombre: "Profesional", precio: "$99.900/mes" },
-  { id: "firma", nombre: "Firma (hasta 5)", precio: "$249.900/mes" },
-];
 const campo = "w-full rounded-md border bg-white p-2";
 
 export default function RegistroAbogado() {
@@ -35,16 +32,23 @@ export default function RegistroAbogado() {
       </fieldset>
       <fieldset>
         <legend className="mb-2 font-medium">Plan</legend>
-        {PLANES.map((p) => (
-          <label key={p.id} className="flex gap-2 text-sm">
-            <input type="radio" name="plan" value={p.id} defaultChecked={p.id === "profesional"} />
-            {p.nombre} · {p.precio}
-          </label>
-        ))}
+        <div className="grid gap-2 sm:grid-cols-3">
+          {PLANES.map((p) => (
+            <label key={p.id} className="flex cursor-pointer flex-col gap-1 rounded-md border bg-white p-3 text-sm has-[:checked]:border-blue-900 has-[:checked]:ring-1 has-[:checked]:ring-blue-900">
+              <span className="flex items-center gap-2 font-medium">
+                <input type="radio" name="plan" value={p.id} defaultChecked={p.id === "profesional"} />
+                {p.nombre}
+              </span>
+              <span className="text-blue-900">{p.precio}</span>
+              <ul className="list-disc pl-4 text-xs text-slate-600">{p.servicios.map((x) => <li key={x}>{x}</li>)}</ul>
+            </label>
+          ))}
+        </div>
+        <p className="mt-1 text-xs text-slate-500">Precios más IVA. Anual: 2 meses gratis. <Link href="/planes" className="underline">Comparar planes</Link></p>
       </fieldset>
       <input name="codigo_referido" placeholder="Código de referido (opcional)" className={campo} />
-      <label className="flex gap-2 text-sm"><input type="checkbox" name="acepta_contrato" required />Acepto el contrato de vinculación de abogados.</label>
-      <label className="flex gap-2 text-sm"><input type="checkbox" name="autoriza_datos" required />Autorizo el tratamiento de mis datos (Ley 1581 de 2012).</label>
+      <label className="flex gap-2 text-sm"><input type="checkbox" name="acepta_contrato" required /><span>Acepto el <Link href="/terminos/abogados" target="_blank" className="underline">contrato de vinculación de abogados</Link>.</span></label>
+      <label className="flex gap-2 text-sm"><input type="checkbox" name="autoriza_datos" required /><span>Autorizo el <Link href="/terminos/datos" target="_blank" className="underline">tratamiento de mis datos</Link> (Ley 1581 de 2012).</span></label>
       <button disabled={enviando} className="rounded-md bg-blue-900 px-5 py-3 text-white disabled:opacity-50">
         {enviando ? "Enviando…" : "Enviar solicitud"}
       </button>
