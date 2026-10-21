@@ -85,7 +85,7 @@ const texto = { type: "STRING" };
 const lista = (max: number, items: object = texto) => ({ type: "ARRAY", items, maxItems: max });
 
 async function orientarConGemini(mensajes: Mensaje[]): Promise<Triage> {
-  const modelo = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+  const modelo = process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
