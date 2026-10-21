@@ -103,8 +103,8 @@ async function orientarConGemini(mensajes: Mensaje[]): Promise<Triage> {
 function pedirGemini(modelo: string, mensajes: Mensaje[]) {
   return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
     method: "POST",
-    // Si el plan gratuito se queda colgado, se corta a los 25 s y se usa la orientación básica.
-    signal: AbortSignal.timeout(25_000),
+    // Si el plan gratuito se queda colgado, se corta a los 60 s y se usa la orientación básica.
+    signal: AbortSignal.timeout(60_000),
     headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: SYSTEM.replace("Usa siempre la herramienta registrar_orientacion.", "Responde solo con el JSON pedido.") }] },
